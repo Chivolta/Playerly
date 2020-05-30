@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:playerly/providers/players.dart';
+import 'package:playerly/providers/squads.dart';
 import 'package:playerly/screens/add_club_screen.dart';
 import 'package:playerly/screens/add_employee_screen.dart';
 import 'package:playerly/screens/add_match_screen.dart';
@@ -9,6 +10,7 @@ import 'package:playerly/screens/club_management_screen.dart';
 import 'package:playerly/screens/employees_screen.dart';
 import 'package:playerly/screens/finances_screen.dart';
 import 'package:playerly/screens/players_screen.dart';
+import 'package:playerly/screens/show_squad_screen.dart';
 import 'package:playerly/screens/squads_screen.dart';
 import 'package:playerly/screens/timetable_screen.dart';
 import 'package:playerly/widgets/club_lists.dart';
@@ -31,7 +33,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => Players(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Squads(),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -52,6 +57,7 @@ class MyApp extends StatelessWidget {
           PlayersScreen.routeName: (ctx) => PlayersScreen(),
           SquadsScreen.routeName: (ctx) => SquadsScreen(),
           TimetableScreen.routeName: (ctx) => TimetableScreen(),
+          ShowSquadScreen.routeName: (ctx) => ShowSquadScreen(),
         },
       ),
     );

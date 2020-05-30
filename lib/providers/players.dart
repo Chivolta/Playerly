@@ -15,7 +15,6 @@ class Players with ChangeNotifier {
   }
 
   List<Player> getPlayerFromClubById(clubId) {
-    print(clubId);
     return _players.where((p) => p.clubId == clubId).toList();
   }
 

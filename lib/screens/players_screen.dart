@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:playerly/providers/my_clubs.dart';
-import 'package:playerly/providers/player.dart';
 import 'package:playerly/providers/players.dart';
 import 'package:playerly/screens/add_player_screen.dart';
 import 'package:playerly/widgets/club_management_drawer.dart';
@@ -39,12 +38,12 @@ class PlayersScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text((i + 1).toString()),
                       Text(players[i].name),
                       Text(players[i].surname),
-                      Text(players[i].position.toString())
+                      Text(players[i].getPosition())
                     ],
                   ),
                 ),
