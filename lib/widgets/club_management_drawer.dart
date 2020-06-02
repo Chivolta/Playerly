@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/screens/club_management_screen.dart';
-import 'package:playerly/screens/employees_screen.dart';
-import 'package:playerly/screens/finances_screen.dart';
-import 'package:playerly/screens/players_screen.dart';
-import 'package:playerly/screens/squads_screen.dart';
-import 'package:playerly/screens/timetable_screen.dart';
+import '../screens/club_management_screen.dart';
+import '../screens/employees_screen.dart';
+import '../screens/finances_screen.dart';
+import '../screens/players_screen.dart';
+import '../screens/squads_screen.dart';
+import '../screens/timetables_screen.dart';
 
 class ClubManagementDrawer extends StatelessWidget {
   void navigateToScreen(context, routeName) {
@@ -53,8 +53,9 @@ class ClubManagementDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.date_range),
-            title: Text('Terminarz'),
-            onTap: () => {navigateToScreen(context, TimetableScreen.routeName)},
+            title: Text('Terminarze'),
+            onTap: () =>
+                {navigateToScreen(context, TimetablesScreen.routeName)},
           ),
           ListTile(
             leading: Icon(Icons.attach_money),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/screens/add_club_screen.dart';
+import '../screens/add_club_screen.dart';
 
 class NoCreatedAnyClub extends StatelessWidget {
   void addClub(context) {

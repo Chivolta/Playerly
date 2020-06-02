@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/providers/my_clubs.dart';
-import 'package:playerly/providers/players.dart';
-import 'package:playerly/providers/squads.dart';
-import 'package:playerly/screens/add_squad_screen.dart';
-import 'package:playerly/screens/show_squad_screen.dart';
-import 'package:playerly/widgets/club_management_drawer.dart';
+import '../providers/my_clubs.dart';
+import '../providers/squads.dart';
+import '../screens/add_squad_screen.dart';
+import '../screens/show_squad_screen.dart';
+import '../widgets/club_management_drawer.dart';
 import 'package:provider/provider.dart';
 
-class SquadsScreen extends StatelessWidget {
+class SquadsScreen extends StatefulWidget {
   static const routeName = '/squads';
 
   @override
+  _SquadsScreenState createState() => _SquadsScreenState();
+}
+
+class _SquadsScreenState extends State<SquadsScreen> {
+  @override
+  void didChangeDependencies() {
+    final squadsProvider = Provider.of<Squads>(context, listen: false);
+    final myClubsProvider = Provider.of<MyClubs>(context, listen: false);
+    final activeClub = myClubsProvider.getActiveClub();
+    squadsProvider.getAllSquadsFromClub(activeClub.id);
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final playersProvider = Provider.of<Players>(context);
-    final clubsProvider = Provider.of<MyClubs>(context);
     final squadsProvider = Provider.of<Squads>(context);
 
     void showSquad(context, squadId) {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/helpers/errors_text.dart';
-import 'package:playerly/helpers/functions.dart';
-import 'package:playerly/providers/my_clubs.dart';
-import 'package:playerly/providers/player.dart';
-import 'package:playerly/providers/players.dart';
-import 'package:playerly/providers/squad.dart';
-import 'package:playerly/providers/squads.dart';
+import '../helpers/errors_text.dart';
+import '../helpers/functions.dart';
+import '../providers/my_clubs.dart';
+import '../providers/player.dart';
+import '../providers/players.dart';
+import '../providers/squad.dart';
+import '../providers/squads.dart';
 import 'package:provider/provider.dart';
 
 class AddSquadScreen extends StatefulWidget {
@@ -18,12 +18,19 @@ class AddSquadScreen extends StatefulWidget {
 class _AddSquadScreenState extends State<AddSquadScreen> {
   final _form = GlobalKey<FormState>();
 
+  @override
+  void didChangeDependencies() {
+    final playersProvider = Provider.of<Players>(context);
+    final clubsData = Provider.of<MyClubs>(context);
+    playersProvider.getAllPlayerFromClub(clubsData.getActiveClub().id);
+    super.didChangeDependencies();
+  }
+
   var newSquad = Squad(
     id: '',
-    clubId: '',
     name: '',
     formation: Squad.formationList[0],
-    playersId: new List<String>.generate(11, (i) => ''),
+    playersId: ['', '', '', '', '', '', '', '', '', '', ''],
   );
 
   List<DropdownMenuItem<int>> formationList = [];
@@ -95,8 +102,7 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
     final squadsProvider = Provider.of<Squads>(context);
 
     final clubId = clubsData.getActiveClub().id;
-    final playersFromClub =
-        playersProvider.items.where((p) => p.clubId == clubId).toList();
+    final playersFromClub = playersProvider.items;
 
     var goalkeepers = playersFromClub
         .where((p) => p.position == Position.Goalkeeper)
@@ -142,8 +148,7 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
 
       _form.currentState.save();
       newSquad.id = Functions.generateId();
-      newSquad.clubId = clubId;
-      squadsProvider.addSquad(newSquad);
+      squadsProvider.addSquad(newSquad, clubId);
 
       Navigator.of(context).pop();
     }
@@ -197,8 +202,9 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
                       items: goalkeepersList,
                       validator: (value) =>
                           validatePlayer(value, goalkeepers, 0),
-                      onChanged: (value) =>
-                          {newSquad.playersId[0] = goalkeepers[value].id}),
+                      onChanged: (value) {
+                        newSquad.playersId[0] = goalkeepers[value].id;
+                      }),
                   ...new List<Widget>.generate(
                       newSquad.formation[1],
                       (int index) => DropdownButtonFormField(
@@ -208,10 +214,9 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
                           items: defendersList,
                           validator: (value) =>
                               validatePlayer(value, defenders, 1 + index),
-                          onChanged: (value) => {
-                                newSquad.playersId[1 + index] =
-                                    defenders[value].id
-                              })),
+                          onChanged: (value) {
+                            newSquad.playersId[1 + index] = defenders[value].id;
+                          })),
                   ...new List<Widget>.generate(
                     newSquad.formation[2],
                     (int index) => DropdownButtonFormField(

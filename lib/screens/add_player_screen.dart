@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/helpers/errors_text.dart';
-import 'package:playerly/helpers/functions.dart';
-import 'package:playerly/providers/my_clubs.dart';
-import 'package:playerly/providers/player.dart';
-import 'package:playerly/providers/players.dart';
+import '../helpers/errors_text.dart';
+import '../helpers/functions.dart';
+import '../providers/my_clubs.dart';
+import '../providers/player.dart';
+import '../providers/players.dart';
 import 'package:provider/provider.dart';
 
 class AddPlayerScreen extends StatelessWidget {
@@ -13,7 +13,6 @@ class AddPlayerScreen extends StatelessWidget {
 
   var newPlayer = Player(
       id: '',
-      clubId: '',
       name: '',
       surname: '',
       age: null,
@@ -58,8 +57,7 @@ class AddPlayerScreen extends StatelessWidget {
 
       _form.currentState.save();
       newPlayer.id = Functions.generateId();
-      newPlayer.clubId = clubId;
-      playersProvider.addPlayer(newPlayer);
+      playersProvider.addPlayer(newPlayer, clubId);
 
       Navigator.of(context).pop();
     }

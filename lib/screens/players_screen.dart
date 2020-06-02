@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/providers/my_clubs.dart';
-import 'package:playerly/providers/players.dart';
-import 'package:playerly/screens/add_player_screen.dart';
-import 'package:playerly/widgets/club_management_drawer.dart';
+import '../providers/player.dart';
+import '../providers/my_clubs.dart';
+import '../providers/players.dart';
+import '../screens/add_player_screen.dart';
+import '../widgets/club_management_drawer.dart';
 import 'package:provider/provider.dart';
 
-class PlayersScreen extends StatelessWidget {
+class PlayersScreen extends StatefulWidget {
   static const routeName = '/players';
+
+  @override
+  _PlayersScreenState createState() => _PlayersScreenState();
+}
+
+class _PlayersScreenState extends State<PlayersScreen> {
+  @override
+  void didChangeDependencies() {
+    final playersProvider = Provider.of<Players>(context, listen: false);
+    final clubsData = Provider.of<MyClubs>(context);
+    playersProvider.getAllPlayerFromClub(clubsData.getActiveClub().id);
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
     final playersData = Provider.of<Players>(context);
     final clubsData = Provider.of<MyClubs>(context);
-    final players =
-        playersData.getPlayerFromClubById(clubsData.getActiveClub().id);
+    List<Player> players = playersData.items;
 
     return Scaffold(
       appBar: AppBar(

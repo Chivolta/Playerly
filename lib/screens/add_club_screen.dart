@@ -1,9 +1,10 @@
+import '../helpers/functions.dart';
+
+import '../providers/sponsor.dart';
 import 'package:flutter/material.dart';
-import 'package:playerly/helpers/errors_text.dart';
-import 'package:playerly/helpers/functions.dart';
-import 'package:playerly/providers/my_club.dart';
-// import 'package:intl/intl.dart';
-import 'package:playerly/providers/my_clubs.dart';
+import '../helpers/errors_text.dart';
+import '../providers/my_club.dart';
+import '../providers/my_clubs.dart';
 import 'package:provider/provider.dart';
 
 class AddClubScreen extends StatefulWidget {
@@ -22,31 +23,34 @@ class _AddClubScreenState extends State<AddClubScreen> {
     owner: '',
     reveneus: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     expenses: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    sponsors: [],
     fortune: 0,
   );
+
+  List<Sponsor> newSponsors = [];
 
   get currentMonthName {
     return DateTime.now().month;
   }
 
-  addSponsor() {
-    setState(() {
-      newClub.sponsors.add(Sponsor('', 0, Functions.generateId()));
-    });
-  }
-
-  removeSponsor(index) {
-    setState(() {
-      print(index);
-      newClub.sponsors.removeAt(index);
-      print(newClub.sponsors.length);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final myClubsProvider = Provider.of<MyClubs>(context);
+
+    addSponsor() {
+      setState(() {
+        newSponsors.add(Sponsor(
+          id: Functions.generateId(),
+          name: '',
+          revenue: 0.0,
+        ));
+      });
+    }
+
+    removeSponsor(index) {
+      setState(() {
+        newSponsors.removeAt(index);
+      });
+    }
 
     onSubmit() {
       final isValid = _form.currentState.validate();
@@ -55,8 +59,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
       }
 
       _form.currentState.save();
-      newClub.id = Functions.generateId();
-      myClubsProvider.addMyClub(newClub);
+      myClubsProvider.addMyClub(newClub, newSponsors, context);
       Navigator.of(context).pop();
     }
 
@@ -119,7 +122,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                           ),
                         ],
                       ),
-                      ...newClub.sponsors
+                      ...newSponsors
                           .asMap()
                           .map((i, element) => MapEntry(
                                 i,
@@ -136,7 +139,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                                         textInputAction: TextInputAction.next,
                                         keyboardType: TextInputType.text,
                                         onSaved: (value) =>
-                                            {newClub.sponsors[i].name = value},
+                                            {newSponsors[i].name = value},
                                         validator: (value) => value.isNotEmpty
                                             ? null
                                             : ErrorsText.requiredErrorText,
@@ -157,7 +160,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
                                               ? null
                                               : ErrorsText.requiredErrorText,
                                           onSaved: (value) => {
-                                            newClub.sponsors[i].revenue =
+                                            newSponsors[i].revenue =
                                                 double.parse(value)
                                           },
                                         ),

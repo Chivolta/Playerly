@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/widgets/club_management_drawer.dart';
+import '../widgets/club_management_drawer.dart';
 
 class EmployeesScreen extends StatelessWidget {
   static const routeName = '/employees';

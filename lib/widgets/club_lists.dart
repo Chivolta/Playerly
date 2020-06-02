@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:playerly/providers/my_clubs.dart';
+import '../providers/my_clubs.dart';
 import 'package:provider/provider.dart';
 
 import 'club_item.dart';

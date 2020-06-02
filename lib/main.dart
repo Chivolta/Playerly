@@ -1,23 +1,32 @@
+import './providers/sponsors.dart';
 import 'package:flutter/material.dart';
-import 'package:playerly/providers/players.dart';
-import 'package:playerly/providers/squads.dart';
-import 'package:playerly/screens/add_club_screen.dart';
-import 'package:playerly/screens/add_employee_screen.dart';
-import 'package:playerly/screens/add_match_screen.dart';
-import 'package:playerly/screens/add_player_screen.dart';
-import 'package:playerly/screens/add_squad_screen.dart';
-import 'package:playerly/screens/club_management_screen.dart';
-import 'package:playerly/screens/employees_screen.dart';
-import 'package:playerly/screens/finances_screen.dart';
-import 'package:playerly/screens/players_screen.dart';
-import 'package:playerly/screens/show_squad_screen.dart';
-import 'package:playerly/screens/squads_screen.dart';
-import 'package:playerly/screens/timetable_screen.dart';
-import 'package:playerly/widgets/club_lists.dart';
-import 'package:playerly/widgets/no_created_any_club.dart';
+import './providers/my_matches.dart';
+import './providers/player_matches_statistics.dart';
+import './providers/players.dart';
+import './providers/squads.dart';
+import './providers/timetables.dart';
+import './screens/add_club_screen.dart';
+import './screens/add_employee_screen.dart';
+import './screens/add_my_match_screen.dart';
+import './screens/add_player_screen.dart';
+import './screens/add_squad_screen.dart';
+import './screens/club_management_screen.dart';
+import './screens/employees_screen.dart';
+import './screens/end_match_screen.dart';
+import './screens/finances_screen.dart';
+import './screens/match_description_screen.dart';
+import './screens/my_matches_screen.dart';
+import './screens/players_screen.dart';
+import './screens/show_squad_screen.dart';
+import './screens/squads_screen.dart';
+import './screens/timetables_screen.dart';
+import './widgets/club_lists.dart';
+import './widgets/no_created_any_club.dart';
 
 import './providers/my_clubs.dart';
 import 'package:provider/provider.dart';
+
+import 'screens/add_timetable_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,6 +46,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => Squads(),
         ),
+        ChangeNotifierProvider(
+          create: (ctx) => Timetables(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => MyMatches(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => PlayerMatchesStatistics(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Sponsors(),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -48,16 +69,20 @@ class MyApp extends StatelessWidget {
         routes: {
           AddClubScreen.routeName: (ctx) => AddClubScreen(),
           AddEmployeeScreen.routeName: (ctx) => AddEmployeeScreen(),
-          AddMatchScreen.routeName: (ctx) => AddMatchScreen(),
+          AddMyMatchScreen.routeName: (ctx) => AddMyMatchScreen(),
           AddPlayerScreen.routeName: (ctx) => AddPlayerScreen(),
           AddSquadScreen.routeName: (ctx) => AddSquadScreen(),
+          AddTimetableScreen.routeName: (ctx) => AddTimetableScreen(),
           ClubManagementScreen.routeName: (ctx) => ClubManagementScreen(),
           EmployeesScreen.routeName: (ctx) => EmployeesScreen(),
           FinancesScreen.routeName: (ctx) => FinancesScreen(),
           PlayersScreen.routeName: (ctx) => PlayersScreen(),
           SquadsScreen.routeName: (ctx) => SquadsScreen(),
-          TimetableScreen.routeName: (ctx) => TimetableScreen(),
+          TimetablesScreen.routeName: (ctx) => TimetablesScreen(),
           ShowSquadScreen.routeName: (ctx) => ShowSquadScreen(),
+          MyMatchesScreen.routeName: (ctx) => MyMatchesScreen(),
+          MatchDescriptionScreen.routeName: (ctx) => MatchDescriptionScreen(),
+          EndMatchScreen.routeName: (ctx) => EndMatchScreen()
         },
       ),
     );
@@ -74,6 +99,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void didChangeDependencies() {
+    final myClubsData = Provider.of<MyClubs>(context);
+    myClubsData.getAllClubs();
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final myClubsData = Provider.of<MyClubs>(context);
