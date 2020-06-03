@@ -165,73 +165,73 @@ class _AddClubScreenState extends State<AddClubScreen> {
                             ),
                             ...newSponsors
                                 .asMap()
-                                .map((i, element) => MapEntry(
-                                      i,
-                                      Dismissible(
-                                        key: Key(element.id),
-                                        onDismissed: (_) => {removeSponsor(i)},
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            TextFormField(
+                                .map(
+                                  (i, element) => MapEntry(
+                                    i,
+                                    Dismissible(
+                                      key: Key(element.id),
+                                      onDismissed: (_) => {removeSponsor(i)},
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          TextFormField(
+                                            decoration: InputDecoration(
+                                                labelText: 'Nazwa sponsora'),
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            keyboardType: TextInputType.text,
+                                            onFieldSubmitted: (_) => FocusScope
+                                                    .of(context)
+                                                .requestFocus(
+                                                    _sponsorRevenueFocusNodes[
+                                                        i]),
+                                            focusNode:
+                                                _sponsorNameFocusNodes[i],
+                                            onSaved: (value) =>
+                                                {newSponsors[i].name = value},
+                                            validator: (value) => value
+                                                    .isNotEmpty
+                                                ? null
+                                                : ErrorsText.requiredErrorText,
+                                          ),
+                                          Container(
+                                            width: 300,
+                                            margin: EdgeInsets.fromLTRB(
+                                                10, 0, 0, 0),
+                                            child: TextFormField(
                                               decoration: InputDecoration(
-                                                  labelText: 'Nazwa sponsora'),
+                                                  prefixIcon:
+                                                      Icon(Icons.attach_money),
+                                                  labelText:
+                                                      'Przychody miesięczne'),
                                               textInputAction:
-                                                  TextInputAction.next,
-                                              keyboardType: TextInputType.text,
-                                              onFieldSubmitted: (_) => FocusScope
-                                                      .of(context)
-                                                  .requestFocus(
-                                                      _sponsorRevenueFocusNodes[
-                                                          i]),
+                                                  TextInputAction.none,
                                               focusNode:
-                                                  _sponsorNameFocusNodes[i],
-                                              onSaved: (value) =>
-                                                  {newSponsors[i].name = value},
+                                                  _sponsorRevenueFocusNodes[i],
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
+                                                WhitelistingTextInputFormatter
+                                                    .digitsOnly
+                                              ],
                                               validator: (value) =>
                                                   value.isNotEmpty
                                                       ? null
                                                       : ErrorsText
                                                           .requiredErrorText,
+                                              onSaved: (value) => {
+                                                newSponsors[i].revenue =
+                                                    double.parse(value)
+                                              },
                                             ),
-                                            Container(
-                                              width: 300,
-                                              margin: EdgeInsets.fromLTRB(
-                                                  10, 0, 0, 0),
-                                              child: TextFormField(
-                                                decoration: InputDecoration(
-                                                    prefixIcon: Icon(
-                                                        Icons.attach_money),
-                                                    labelText:
-                                                        'Przychody miesięczne'),
-                                                textInputAction:
-                                                    TextInputAction.none,
-                                                focusNode:
-                                                    _sponsorRevenueFocusNodes[
-                                                        i],
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                inputFormatters: <
-                                                    TextInputFormatter>[
-                                                  WhitelistingTextInputFormatter
-                                                      .digitsOnly
-                                                ],
-                                                validator: (value) =>
-                                                    value.isNotEmpty
-                                                        ? null
-                                                        : ErrorsText
-                                                            .requiredErrorText,
-                                                onSaved: (value) => {
-                                                  newSponsors[i].revenue =
-                                                      double.parse(value)
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    ))
+                                    ),
+                                  ),
+                                )
                                 .values
                                 .toList()
                           ],

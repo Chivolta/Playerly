@@ -8,14 +8,22 @@ class EndedMatchStatistics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Text(
-            'Wynik: ${selectedMyMatch.ourGoals} - ${selectedMyMatch.opponentGoals}'),
-        Text(
-          'Przychód: ${selectedMyMatch.revenue}',
-        ),
-      ],
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+      child: Column(
+        children: <Widget>[
+          Text(
+            'Wynik: ${selectedMyMatch.ourGoals} - ${selectedMyMatch.opponentGoals}',
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              'Przychód: ${selectedMyMatch.revenue}',
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../providers/timetables.dart';
 import '../providers/my_clubs.dart';
 import '../helpers/errors_text.dart';
@@ -13,6 +14,9 @@ class EndMatchScreen extends StatefulWidget {
 }
 
 class _EndMatchScreenState extends State<EndMatchScreen> {
+  final _goalsConcededFocusNode = FocusNode();
+  final _revenueFocusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     final _form = GlobalKey<FormState>();
@@ -66,6 +70,11 @@ class _EndMatchScreenState extends State<EndMatchScreen> {
               decoration: InputDecoration(
                   prefixIcon: Icon(Icons.add), labelText: 'Strzelone gole'),
               textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) =>
+                  FocusScope.of(context).requestFocus(_goalsConcededFocusNode),
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
               keyboardType: TextInputType.number,
               onSaved: (value) =>
                   {selectedMyMatchCopy.ourGoals = int.parse(value)},
@@ -76,7 +85,13 @@ class _EndMatchScreenState extends State<EndMatchScreen> {
               decoration: InputDecoration(
                   prefixIcon: Icon(Icons.remove), labelText: 'Stracone gole'),
               textInputAction: TextInputAction.next,
+              focusNode: _goalsConcededFocusNode,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
               keyboardType: TextInputType.number,
+              onFieldSubmitted: (_) =>
+                  FocusScope.of(context).requestFocus(_revenueFocusNode),
               onSaved: (value) =>
                   {selectedMyMatchCopy.opponentGoals = int.parse(value)},
               validator: (value) =>
@@ -85,7 +100,11 @@ class _EndMatchScreenState extends State<EndMatchScreen> {
             TextFormField(
               decoration: InputDecoration(
                   prefixIcon: Icon(Icons.attach_money), labelText: 'Przychód'),
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
+              focusNode: _revenueFocusNode,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
               keyboardType: TextInputType.number,
               onSaved: (value) =>
                   {selectedMyMatchCopy.revenue = double.parse(value)},

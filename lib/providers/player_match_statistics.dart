@@ -1,23 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class PlayerMatchStatistics {
   String id;
-  String matchId;
   String playerId;
   int goals;
-  int assists;
-  int tacles;
   int goalsConceded;
-  double grade;
-  DateTime injuryDate;
+  double rating;
+  bool isInjured;
 
   PlayerMatchStatistics({
     this.id,
-    this.matchId,
     this.playerId,
     this.goals,
-    this.assists,
-    this.tacles,
     this.goalsConceded,
-    this.grade,
-    this.injuryDate,
+    this.rating,
+    this.isInjured,
   });
+
+  factory PlayerMatchStatistics.fromFirestore(DocumentSnapshot doc) {
+    Map data = doc.data;
+    return PlayerMatchStatistics(
+      id: doc.documentID,
+      playerId: data['matchId'],
+      goals: data['goals'],
+      goalsConceded: data['goalsConceded'],
+      rating: data['grade'],
+      isInjured: data['isInjured'],
+    );
+  }
 }

@@ -73,7 +73,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dodaj nowy zawodnika'),
+        title: const Text('Dodaj nowego zawodnika'),
       ),
       body: Container(
         margin: const EdgeInsets.all(10),

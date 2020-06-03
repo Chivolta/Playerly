@@ -6,6 +6,7 @@ import 'my_match.dart';
 
 class MyMatches with ChangeNotifier {
   List<MyMatch> _matches = [];
+  bool _ifPlayersWereRated = false;
 
   final databaseReference = Firestore.instance;
   MyMatch _selectedMyMatch;
@@ -14,12 +15,33 @@ class MyMatches with ChangeNotifier {
     return [..._matches];
   }
 
+  bool getIfPlayersWereRated() {
+    print(_ifPlayersWereRated);
+    return _ifPlayersWereRated;
+  }
+
   MyMatch getSelectedMyMatchById(myMatchId) {
     return _matches.firstWhere((m) => m.id == myMatchId);
   }
 
   MyMatch getSelectedMyMatch() {
     return _selectedMyMatch;
+  }
+
+  Future<void> checkIfPlayersWereRated(clubId, timetableId, matchId) async {
+    print('Checking if players was Rated');
+    var result = await databaseReference
+        .collection("clubs")
+        .document(clubId)
+        .collection('timetables')
+        .document(timetableId)
+        .collection('matches')
+        .document(matchId)
+        .collection('playerMatchesStatistics')
+        .getDocuments();
+
+    _ifPlayersWereRated = result.documents.length > 0 ? true : false;
+    notifyListeners();
   }
 
   Future<void> getAllMatchesFromTimetable(clubId, timetableId) async {
@@ -91,9 +113,5 @@ class MyMatches with ChangeNotifier {
     _selectedMyMatch = match;
 
     notifyListeners();
-  }
-
-  MyMatch getMyClubById(matchId) {
-    return _matches.firstWhere((m) => m.id == matchId);
   }
 }

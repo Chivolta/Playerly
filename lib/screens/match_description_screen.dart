@@ -1,8 +1,7 @@
+import 'package:com.playerly/screens/rate_players_screen.dart';
 import 'package:flutter/material.dart';
-import '../providers/player_matches_statistics.dart';
 import '../providers/my_clubs.dart';
 import '../providers/my_matches.dart';
-import '../providers/player_matches_statistics.dart';
 import '../providers/squad.dart';
 import '../providers/squads.dart';
 import '../providers/timetables.dart';
@@ -20,6 +19,7 @@ class MatchDescriptionScreen extends StatefulWidget {
 class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
   var _isInit = false;
   var _isLoading = false;
+  var _isPlayersRated = false;
 
   @override
   void didChangeDependencies() {
@@ -32,14 +32,24 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
       final matchesProvider = Provider.of<MyMatches>(context);
       final squadsProvider = Provider.of<Squads>(context);
 
+      final clubId = clubsProvider.getActiveClub().id;
+      final timetableId = timetablesProvider.getSelectedTimetable().id;
+
       matchesProvider
-          .getAllMatchesFromTimetable(clubsProvider.getActiveClub().id,
-              timetablesProvider.getSelectedTimetable().id)
-          .then((_) => squadsProvider
-              .getAllSquadsFromClub(clubsProvider.getActiveClub().id))
+          .getAllMatchesFromTimetable(
+            clubId,
+            timetableId,
+          )
+          .then((_) => squadsProvider.getAllSquadsFromClub(clubId))
           .then((_) {
-        setState(() {
-          _isLoading = false;
+        final selectedMyMatch = matchesProvider.getSelectedMyMatch();
+        final matchId = selectedMyMatch.id;
+        matchesProvider
+            .checkIfPlayersWereRated(clubId, timetableId, matchId)
+            .then((value) {
+          setState(() {
+            _isLoading = false;
+          });
         });
       });
 
@@ -55,15 +65,9 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
     final myClubsProvider = Provider.of<MyClubs>(context);
     final squadsProvider = Provider.of<Squads>(context);
 
-    final playerMatchesStatisticsProvider =
-        Provider.of<PlayerMatchesStatistics>(context);
-    // final selectedPlayerMatchesStatistics = playerMatchesStatisticsProvider
-
     final selectedClub = myClubsProvider.getActiveClub();
 
     final selectedMyMatch = myMatchesProvider.getSelectedMyMatch();
-
-    // print(selectedMyMatch.isEnd);
 
     Squad getSelectedSquad(squadId) {
       return squadsProvider.getSquadById(squadId);
@@ -136,13 +140,17 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
                               },
                             )
                           : EndedMatchStatistics(selectedMyMatch),
-                      selectedMyMatch.isEnd == true
+                      selectedMyMatch.isEnd == true &&
+                              myMatchesProvider.getIfPlayersWereRated() == false
                           ? RaisedButton(
                               child: const Text("Oceń zawodników"),
                               color: Colors.green,
-                              onPressed: () => {},
+                              onPressed: () => {
+                                Navigator.of(context)
+                                    .pushNamed(RatePlayersScreen.routeName)
+                              },
                             )
-                          : Text(''),
+                          : Text('Zawodnicy zostali już ocenieni.'),
                     ],
                   )
                 ],

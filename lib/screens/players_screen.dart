@@ -24,8 +24,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
         _isLoading = true;
       });
       final playersProvider = Provider.of<Players>(context);
-      final clubsData = Provider.of<MyClubs>(context);
-      var clubId = clubsData.getActiveClub().id;
+      final clubsProvider = Provider.of<MyClubs>(context);
+      var clubId = clubsProvider.getActiveClub().id;
 
       playersProvider.getAllPlayerFromClub(clubId).then((_) {
         setState(() {
