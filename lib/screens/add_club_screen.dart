@@ -19,19 +19,10 @@ class AddClubScreen extends StatefulWidget {
 class _AddClubScreenState extends State<AddClubScreen> {
   final _form = GlobalKey<FormState>();
   var _isLoading = false;
-  var _isInit = false;
   final _ownerFocusNode = FocusNode();
   final _fortuneFocusNode = FocusNode();
   final _sponsorNameFocusNodes = [];
   final _sponsorRevenueFocusNodes = [];
-
-  @override
-  void didChangeDependencies() {
-    if (_isInit == false) {
-      _isInit = true;
-    }
-    super.didChangeDependencies();
-  }
 
   var newClub = MyClub(
     id: '',

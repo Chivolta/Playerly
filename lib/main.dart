@@ -1,6 +1,7 @@
-import 'package:com.playerly/screens/rate_players_screen.dart';
-import 'package:com.playerly/screens/settings_screen.dart';
-import 'package:com.playerly/screens/sponsors_screen.dart';
+import './providers/employees.dart';
+import './screens/rate_players_screen.dart';
+import './screens/settings_screen.dart';
+import './screens/sponsors_screen.dart';
 
 import './providers/sponsors.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (ctx) => Sponsors(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Employees(),
         ),
       ],
       child: MaterialApp(

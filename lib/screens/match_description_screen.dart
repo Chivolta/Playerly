@@ -150,7 +150,7 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
                                     .pushNamed(RatePlayersScreen.routeName)
                               },
                             )
-                          : Text('Zawodnicy zostali już ocenieni.'),
+                          : Text(''),
                     ],
                   )
                 ],

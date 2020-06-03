@@ -114,13 +114,62 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
         .where((p) => p.position == Position.Striker)
         .toList();
 
+    showAlertDialog(BuildContext context, String message) {
+      // set up the button
+      Widget okButton = FlatButton(
+        child: Text("OK"),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      );
+
+      // set up the AlertDialog
+      AlertDialog alert = AlertDialog(
+        title: Text("Uwaga!"),
+        content: Text(message),
+        actions: [
+          okButton,
+        ],
+      );
+
+      // show the dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
+
     onSubmit() {
-      final isValid = _form.currentState.validate();
+      var isValid = _form.currentState.validate();
+      _form.currentState.save();
+
+      var sumOfOurGoals = 0;
+      var sumOfOponnentGoals = 0;
+      for (var i = 0; i < playerMatchesStatistics.length; i++) {
+        sumOfOurGoals += playerMatchesStatistics[i].goals;
+        sumOfOponnentGoals += playerMatchesStatistics[i].goalsConceded;
+      }
+
+      print(sumOfOurGoals);
+      print(selectedMyMatch.ourGoals);
+      if (sumOfOurGoals != selectedMyMatch.ourGoals) {
+        isValid = false;
+        showAlertDialog(context,
+            'Ilość strzelonych goli przez graczy musi zgadzać się ze stanem faktycznym!');
+      }
+
+      if (sumOfOponnentGoals != selectedMyMatch.opponentGoals) {
+        isValid = false;
+        showAlertDialog(context,
+            'Ilość straconych goli przez graczy musi zgadzać się ze stanem faktycznym!');
+      }
+
       if (!isValid) {
         return;
       }
 
-      _form.currentState.save();
       _isLoading = true;
 
       for (var i = 0; i < playerMatchesStatistics.length; i++) {

@@ -39,6 +39,7 @@ class _EndMatchScreenState extends State<EndMatchScreen> {
 
     onSubmit() {
       final isValid = _form.currentState.validate();
+
       if (!isValid) {
         return;
       }

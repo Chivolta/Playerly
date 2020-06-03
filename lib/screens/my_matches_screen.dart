@@ -1,3 +1,4 @@
+import 'package:com.playerly/providers/my_match.dart';
 import 'package:flutter/material.dart';
 import '../providers/my_matches.dart';
 import '../providers/timetables.dart';
@@ -69,6 +70,34 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
       Navigator.of(context).pushNamed(MatchDescriptionScreen.routeName);
     }
 
+    Color getCardColor(MyMatch m) {
+      if (m.isEnd == true) {
+        if (m.ourGoals > m.opponentGoals) {
+          return Colors.green[100];
+        }
+        if (m.ourGoals < m.opponentGoals) {
+          return Colors.red[100];
+        }
+
+        if (m.ourGoals == m.opponentGoals) {
+          return Colors.yellow[100];
+        }
+      }
+    }
+
+    String getMatchResultText(MyMatch m) {
+      if (m.ourGoals > m.opponentGoals) {
+        return 'Wygrana ${m.ourGoals} - ${m.opponentGoals}';
+      }
+      if (m.ourGoals < m.opponentGoals) {
+        return 'Przegrana ${m.ourGoals} - ${m.opponentGoals}';
+      }
+
+      if (m.ourGoals == m.opponentGoals) {
+        return 'Remis ${m.ourGoals} - ${m.opponentGoals}';
+      }
+    }
+
     myMatches.sort((a, b) => (b.datetimeMatch).compareTo(a.datetimeMatch));
 
     return Scaffold(
@@ -88,6 +117,7 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
               children: myMatches
                   .map((m) => InkWell(
                         child: Card(
+                          color: getCardColor(m),
                           margin: const EdgeInsets.all(1),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -96,11 +126,14 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
                                 Padding(
                                   padding: const EdgeInsets.all(2.0),
                                   child: Text(
-                                      '${selectedClub.name} vs ${m.opponentName}'),
+                                    '${selectedClub.name} vs ${m.opponentName}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(2.0),
-                                  child: Text('Miejsce: ${m.stadiumName}.'),
+                                  child: Text('Miejsce: ${m.stadiumName}'),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(2.0),
@@ -108,6 +141,17 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
                                 ),
                                 Text(
                                     'Wybrany skład: ${getSelectedSquad(m.squadId).name}'),
+                                m.isEnd == true
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Text(
+                                          getMatchResultText(m),
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )
+                                    : Text(''),
                               ],
                             ),
                           ),
