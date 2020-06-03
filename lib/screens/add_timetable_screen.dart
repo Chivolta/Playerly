@@ -22,13 +22,8 @@ class _AddTimetableScreenState extends State<AddTimetableScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final timetablesProvider = Provider.of<Timetables>(
-      context,
-      listen: false,
-    );
-
-    final clubsData = Provider.of<MyClubs>(context, listen: false);
-
+    final timetablesProvider = Provider.of<Timetables>(context);
+    final clubsData = Provider.of<MyClubs>(context);
     final clubId = clubsData.getActiveClub().id;
 
     onSubmit() {
@@ -44,7 +39,7 @@ class _AddTimetableScreenState extends State<AddTimetableScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dodaj nowy terminarz'),
+        title: const Text('Dodaj nowy terminarz'),
       ),
       body: Container(
         margin: const EdgeInsets.all(10),
@@ -56,7 +51,7 @@ class _AddTimetableScreenState extends State<AddTimetableScreen> {
                 labelText: 'Nazwa terminarza',
                 prefixIcon: Icon(Icons.description),
               ),
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
               keyboardType: TextInputType.text,
               onSaved: (value) => {newTimetable.name = value},
               validator: (value) =>
@@ -67,7 +62,7 @@ class _AddTimetableScreenState extends State<AddTimetableScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => onSubmit(),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         backgroundColor: Colors.green,
       ),
     );

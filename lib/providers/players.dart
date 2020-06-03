@@ -10,7 +10,9 @@ class Players with ChangeNotifier {
     return [..._players];
   }
 
-  void addPlayer(Player player, clubId) async {
+  Future<void> addPlayer(Player player, clubId) async {
+    print('Adding player');
+
     DocumentReference ref = await databaseReference
         .collection("clubs")
         .document(clubId)
@@ -30,7 +32,24 @@ class Players with ChangeNotifier {
     notifyListeners(); // notify all widgets about changes - so we used ChangeNotifier
   }
 
-  getAllPlayerFromClub(clubId) async {
+  List<Player> getGoalkeepersFromClub() {
+    return _players.where((p) => p.position == Position.Goalkeeper).toList();
+  }
+
+  List<Player> getDefendersFromClub() {
+    return _players.where((p) => p.position == Position.Defender).toList();
+  }
+
+  List<Player> getMidfieldersFromClub() {
+    return _players.where((p) => p.position == Position.Midfielder).toList();
+  }
+
+  List<Player> getStrikersFromClub() {
+    return _players.where((p) => p.position == Position.Striker).toList();
+  }
+
+  Future<void> getAllPlayerFromClub(clubId) async {
+    print('Getting all players from club');
     await databaseReference
         .collection("clubs")
         .document(clubId)

@@ -1,3 +1,7 @@
+import 'package:com.playerly/screens/rate_players_screen.dart';
+import 'package:com.playerly/screens/settings_screen.dart';
+import 'package:com.playerly/screens/sponsors_screen.dart';
+
 import './providers/sponsors.dart';
 import 'package:flutter/material.dart';
 import './providers/my_matches.dart';
@@ -60,7 +64,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Playerly',
         theme: ThemeData(
           primarySwatch: Colors.purple,
           visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -82,7 +86,10 @@ class MyApp extends StatelessWidget {
           ShowSquadScreen.routeName: (ctx) => ShowSquadScreen(),
           MyMatchesScreen.routeName: (ctx) => MyMatchesScreen(),
           MatchDescriptionScreen.routeName: (ctx) => MatchDescriptionScreen(),
-          EndMatchScreen.routeName: (ctx) => EndMatchScreen()
+          EndMatchScreen.routeName: (ctx) => EndMatchScreen(),
+          RatePlayersScreen.routeName: (ctx) => RatePlayersScreen(),
+          SettingsScreen.routeName: (ctx) => SettingsScreen(),
+          SponsorsScreen.routeName: (ctx) => SponsorsScreen()
         },
       ),
     );
@@ -99,11 +106,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var _isInit = false;
+  var _isLoading = false;
+
   @override
   void didChangeDependencies() {
-    final myClubsData = Provider.of<MyClubs>(context);
-    myClubsData.getAllClubs();
-    super.didChangeDependencies();
+    if (_isInit == false) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final myClubsData = Provider.of<MyClubs>(context);
+      myClubsData.getAllClubs().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+      _isInit = true;
+      super.didChangeDependencies();
+    }
   }
 
   @override
@@ -113,16 +134,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Zarządzane kluby'),
+        title: const Text('Zarządzane kluby'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () =>
                 Navigator.of(context).pushNamed(AddClubScreen.routeName),
           )
         ],
       ),
-      body: myClubs.length > 0 ? ClubLists() : NoCreatedAnyClub(),
+      body: _isLoading == true
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : myClubs.length > 0 ? ClubLists() : NoCreatedAnyClub(),
     );
   }
 }

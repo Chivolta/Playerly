@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../helpers/errors_text.dart';
 import '../helpers/functions.dart';
 import '../providers/my_clubs.dart';
@@ -6,10 +7,18 @@ import '../providers/player.dart';
 import '../providers/players.dart';
 import 'package:provider/provider.dart';
 
-class AddPlayerScreen extends StatelessWidget {
+class AddPlayerScreen extends StatefulWidget {
   static const routeName = '/add-player';
 
+  @override
+  _AddPlayerScreenState createState() => _AddPlayerScreenState();
+}
+
+class _AddPlayerScreenState extends State<AddPlayerScreen> {
   final _form = GlobalKey<FormState>();
+  final _surnameFocusNode = FocusNode();
+  final _ageFocusNode = FocusNode();
+  final _salaryFocusNode = FocusNode();
 
   var newPlayer = Player(
       id: '',
@@ -64,7 +73,7 @@ class AddPlayerScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dodaj nowy zawodnika'),
+        title: const Text('Dodaj nowy zawodnika'),
       ),
       body: Container(
         margin: const EdgeInsets.all(10),
@@ -75,10 +84,12 @@ class AddPlayerScreen extends StatelessWidget {
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Imię',
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: const Icon(Icons.person),
                   ),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.text,
+                  onFieldSubmitted: (_) =>
+                      FocusScope.of(context).requestFocus(_surnameFocusNode),
                   onSaved: (value) => {newPlayer.name = value},
                   validator: (value) =>
                       value.isNotEmpty ? null : ErrorsText.requiredErrorText,
@@ -89,8 +100,11 @@ class AddPlayerScreen extends StatelessWidget {
                     prefixIcon: Icon(Icons.description),
                   ),
                   textInputAction: TextInputAction.next,
+                  focusNode: _surnameFocusNode,
                   keyboardType: TextInputType.text,
                   onSaved: (value) => {newPlayer.surname = value},
+                  onFieldSubmitted: (_) =>
+                      FocusScope.of(context).requestFocus(_ageFocusNode),
                   validator: (value) =>
                       value.isNotEmpty ? null : ErrorsText.requiredErrorText,
                 ),
@@ -99,7 +113,13 @@ class AddPlayerScreen extends StatelessWidget {
                       prefixIcon: Icon(Icons.exposure_plus_1),
                       labelText: 'Wiek'),
                   textInputAction: TextInputAction.next,
+                  focusNode: _ageFocusNode,
                   keyboardType: TextInputType.number,
+                  onFieldSubmitted: (_) =>
+                      FocusScope.of(context).requestFocus(_salaryFocusNode),
+                  inputFormatters: <TextInputFormatter>[
+                    WhitelistingTextInputFormatter.digitsOnly
+                  ],
                   onSaved: (value) => {newPlayer.age = int.parse(value)},
                   validator: (value) =>
                       value.isNotEmpty ? null : ErrorsText.requiredErrorText,
@@ -117,8 +137,12 @@ class AddPlayerScreen extends StatelessWidget {
                       prefixIcon: Icon(Icons.fingerprint),
                       labelText: 'Zarobki miesięczne'),
                   initialValue: newPlayer.salary.toString(),
-                  textInputAction: TextInputAction.next,
+                  focusNode: _salaryFocusNode,
+                  textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    WhitelistingTextInputFormatter.digitsOnly
+                  ],
                   onSaved: (value) => {newPlayer.salary = double.parse(value)},
                   validator: (value) =>
                       value.isNotEmpty ? null : ErrorsText.requiredErrorText,

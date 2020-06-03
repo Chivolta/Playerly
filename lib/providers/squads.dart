@@ -12,7 +12,8 @@ class Squads with ChangeNotifier {
 
   Squad _selectedSquad;
 
-  void addSquad(Squad squad, clubId) async {
+  Future<void> addSquad(Squad squad, clubId) async {
+    print('Adding a squad');
     DocumentReference ref = await databaseReference
         .collection("clubs")
         .document(clubId)
@@ -29,7 +30,8 @@ class Squads with ChangeNotifier {
     notifyListeners(); // notify all widgets about changes - so we used ChangeNotifier
   }
 
-  getAllSquadsFromClub(clubId) async {
+  Future<void> getAllSquadsFromClub(clubId) async {
+    print('Getting all squads from club');
     await databaseReference
         .collection("clubs")
         .document(clubId)

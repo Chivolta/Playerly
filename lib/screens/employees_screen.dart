@@ -7,7 +7,7 @@ class EmployeesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pracownicy'),
+        title: const Text('Pracownicy'),
       ),
       drawer: ClubManagementDrawer(),
       body: Text('test'),

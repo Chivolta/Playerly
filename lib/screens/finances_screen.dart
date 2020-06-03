@@ -7,7 +7,7 @@ class FinancesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Finanse'),
+        title: const Text('Finanse'),
       ),
       drawer: ClubManagementDrawer(),
       body: Text('test'),

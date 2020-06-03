@@ -32,16 +32,15 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final myMatchesProvider = Provider.of<MyMatches>(context, listen: false);
+    final myMatchesProvider = Provider.of<MyMatches>(context);
     final squadsProvider = Provider.of<Squads>(context);
 
-    final myClubsProvider = Provider.of<MyClubs>(context, listen: false);
+    final myClubsProvider = Provider.of<MyClubs>(context);
     final activeClub = myClubsProvider.getActiveClub();
 
-    final timetablesProvider = Provider.of<Timetables>(context, listen: false);
+    final timetablesProvider = Provider.of<Timetables>(context);
     final selectedTimetable = timetablesProvider.getSelectedTimetable();
 
-    squadsProvider.getAllSquadsFromClub(activeClub.id);
     var squads = squadsProvider.items;
 
     var newMyMatch = MyMatch(
@@ -83,7 +82,7 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
     loadSquadsList();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dodaj nowy mecz'),
+        title: const Text('Dodaj nowy mecz'),
       ),
       body: Form(
           key: _form,

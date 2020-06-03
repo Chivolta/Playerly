@@ -18,34 +18,45 @@ class MatchDescriptionScreen extends StatefulWidget {
 }
 
 class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
-  bool isInit = false;
+  var _isInit = false;
+  var _isLoading = false;
 
   @override
   void didChangeDependencies() {
-    if (isInit == false) {
-      final clubsProvider = Provider.of<MyClubs>(context, listen: false);
-      final timetablesProvider =
-          Provider.of<Timetables>(context, listen: false);
-      final matchesProvider = Provider.of<MyMatches>(context, listen: false);
-      matchesProvider.getAllMatchesFromTimetable(
-          clubsProvider.getActiveClub().id,
-          timetablesProvider.getSelectedTimetable().id);
-
+    if (_isInit == false) {
+      setState(() {
+        _isLoading = true;
+      });
+      final clubsProvider = Provider.of<MyClubs>(context);
+      final timetablesProvider = Provider.of<Timetables>(context);
+      final matchesProvider = Provider.of<MyMatches>(context);
       final squadsProvider = Provider.of<Squads>(context);
-      squadsProvider.getAllSquadsFromClub(clubsProvider.getActiveClub().id);
+
+      matchesProvider
+          .getAllMatchesFromTimetable(clubsProvider.getActiveClub().id,
+              timetablesProvider.getSelectedTimetable().id)
+          .then((_) => squadsProvider
+              .getAllSquadsFromClub(clubsProvider.getActiveClub().id))
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+
+      _isInit = true;
+
       super.didChangeDependencies();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    isInit = true;
     final myMatchesProvider = Provider.of<MyMatches>(context);
-    final myClubsProvider = Provider.of<MyClubs>(context, listen: false);
-    final squadsProvider = Provider.of<Squads>(context, listen: false);
+    final myClubsProvider = Provider.of<MyClubs>(context);
+    final squadsProvider = Provider.of<Squads>(context);
 
     final playerMatchesStatisticsProvider =
-        Provider.of<PlayerMatchesStatistics>(context, listen: false);
+        Provider.of<PlayerMatchesStatistics>(context);
     // final selectedPlayerMatchesStatistics = playerMatchesStatisticsProvider
 
     final selectedClub = myClubsProvider.getActiveClub();
@@ -72,69 +83,71 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
           )
         ],
       ),
-      body: Card(
-        child: ListView(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    '${selectedClub.name} vs ${selectedMyMatch.opponentName}',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Miejsce: ${selectedMyMatch.stadiumName}',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Data: ${selectedMyMatch.datetimeMatch}',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Skład: ${getSelectedSquad(selectedMyMatch.squadId).name}',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                selectedMyMatch.isEnd != true
-                    ? RaisedButton(
-                        child: Text("Zakończ mecz"),
-                        color: Colors.orange,
-                        onPressed: () => {
-                          Navigator.of(context)
-                              .pushNamed(EndMatchScreen.routeName)
-                        },
-                      )
-                    : EndedMatchStatistics(selectedMyMatch),
-                selectedMyMatch.isEnd == true
-                    ? RaisedButton(
-                        child: Text("Oceń zawodników"),
-                        color: Colors.green,
-                        onPressed: () => {},
-                      )
-                    : Text(''),
-              ],
-            )
-          ],
-        ),
-      ),
+      body: _isLoading == true
+          ? Center(child: CircularProgressIndicator())
+          : Card(
+              child: ListView(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          '${selectedClub.name} vs ${selectedMyMatch.opponentName}',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Miejsce: ${selectedMyMatch.stadiumName}',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Data: ${selectedMyMatch.datetimeMatch}',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Skład: ${getSelectedSquad(selectedMyMatch.squadId).name}',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      selectedMyMatch.isEnd != true
+                          ? RaisedButton(
+                              child: Text("Zakończ mecz"),
+                              color: Colors.orange,
+                              onPressed: () => {
+                                Navigator.of(context)
+                                    .pushNamed(EndMatchScreen.routeName)
+                              },
+                            )
+                          : EndedMatchStatistics(selectedMyMatch),
+                      selectedMyMatch.isEnd == true
+                          ? RaisedButton(
+                              child: const Text("Oceń zawodników"),
+                              color: Colors.green,
+                              onPressed: () => {},
+                            )
+                          : Text(''),
+                    ],
+                  )
+                ],
+              ),
+            ),
     );
   }
 }

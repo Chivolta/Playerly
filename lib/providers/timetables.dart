@@ -12,7 +12,8 @@ class Timetables with ChangeNotifier {
     return [..._timetables];
   }
 
-  void addTimetable(Timetable timetable, clubId) async {
+  Future<void> addTimetable(Timetable timetable, clubId) async {
+    print('Adding timetable');
     DocumentReference ref = await databaseReference
         .collection("clubs")
         .document(clubId)
@@ -24,10 +25,11 @@ class Timetables with ChangeNotifier {
     timetable.id = ref.documentID;
     _timetables.add(timetable);
 
-    notifyListeners(); // notify all widgets about changes - so we used ChangeNotifier
+    notifyListeners();
   }
 
-  getAllTimetablesFromClub(clubId) async {
+  Future<void> getAllTimetablesFromClub(clubId) async {
+    print('Getting all timetables from club');
     await databaseReference
         .collection("clubs")
         .document(clubId)

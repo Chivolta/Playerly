@@ -22,7 +22,8 @@ class MyMatches with ChangeNotifier {
     return _selectedMyMatch;
   }
 
-  getAllMatchesFromTimetable(clubId, timetableId) async {
+  Future<void> getAllMatchesFromTimetable(clubId, timetableId) async {
+    print('Getting all matches');
     await databaseReference
         .collection("clubs")
         .document(clubId)
@@ -34,9 +35,7 @@ class MyMatches with ChangeNotifier {
       var matches =
           value.documents.map((e) => MyMatch.fromFirestore(e)).toList();
 
-      print('xd---------------');
       matches.map((e) => print(e.isEnd));
-      print('xd---------------');
       _matches = matches;
       notifyListeners();
     });
@@ -46,7 +45,8 @@ class MyMatches with ChangeNotifier {
     _selectedMyMatch = getSelectedMyMatchById(myMatchId);
   }
 
-  void addMatch(MyMatch match, clubId, timetableId) async {
+  Future<void> addMatch(MyMatch match, clubId, timetableId) async {
+    print('Adding match');
     DocumentReference ref = await databaseReference
         .collection("clubs")
         .document(clubId)
@@ -67,10 +67,11 @@ class MyMatches with ChangeNotifier {
     match.id = ref.documentID;
     _matches.add(match);
 
-    notifyListeners(); // notify all widgets about changes - so we used ChangeNotifier
+    notifyListeners();
   }
 
   void updateMatch(clubId, timetableId, matchId, MyMatch match) async {
+    print('Updating match');
     await databaseReference
         .collection("clubs")
         .document(clubId)

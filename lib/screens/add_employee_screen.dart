@@ -4,6 +4,10 @@ class AddEmployeeScreen extends StatelessWidget {
   static const routeName = '/add-employee';
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Dodaj pracownika'),
+      ),
+    );
   }
 }

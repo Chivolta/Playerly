@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../providers/my_match.dart';
 
 class EndedMatchStatistics extends StatelessWidget {
-  MyMatch selectedMyMatch;
+  final MyMatch selectedMyMatch;
 
   EndedMatchStatistics(this.selectedMyMatch);
 

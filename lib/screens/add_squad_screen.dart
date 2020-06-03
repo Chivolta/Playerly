@@ -17,13 +17,27 @@ class AddSquadScreen extends StatefulWidget {
 
 class _AddSquadScreenState extends State<AddSquadScreen> {
   final _form = GlobalKey<FormState>();
+  var _isInit = false;
+  var _isLoading = false;
 
   @override
   void didChangeDependencies() {
-    final playersProvider = Provider.of<Players>(context);
-    final clubsData = Provider.of<MyClubs>(context);
-    playersProvider.getAllPlayerFromClub(clubsData.getActiveClub().id);
-    super.didChangeDependencies();
+    if (_isInit == false) {
+      setState(() {
+        _isLoading = true;
+      });
+      final playersProvider = Provider.of<Players>(context);
+      final clubsData = Provider.of<MyClubs>(context);
+      playersProvider
+          .getAllPlayerFromClub(clubsData.getActiveClub().id)
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+      _isInit = true;
+      super.didChangeDependencies();
+    }
   }
 
   var newSquad = Squad(
@@ -102,21 +116,11 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
     final squadsProvider = Provider.of<Squads>(context);
 
     final clubId = clubsData.getActiveClub().id;
-    final playersFromClub = playersProvider.items;
 
-    var goalkeepers = playersFromClub
-        .where((p) => p.position == Position.Goalkeeper)
-        .toList();
-
-    var defenders =
-        playersFromClub.where((p) => p.position == Position.Defender).toList();
-
-    var midfielders = playersFromClub
-        .where((p) => p.position == Position.Midfielder)
-        .toList();
-
-    var strikers =
-        playersFromClub.where((p) => p.position == Position.Striker).toList();
+    var goalkeepers = playersProvider.getGoalkeepersFromClub();
+    var defenders = playersProvider.getDefendersFromClub();
+    var midfielders = playersProvider.getMidfieldersFromClub();
+    var strikers = playersProvider.getStrikersFromClub();
 
     loadFormationList();
     loadPlayersPositionList(goalkeepers, defenders, midfielders, strikers);
@@ -148,115 +152,121 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
 
       _form.currentState.save();
       newSquad.id = Functions.generateId();
-      squadsProvider.addSquad(newSquad, clubId);
-
-      Navigator.of(context).pop();
+      squadsProvider
+          .addSquad(newSquad, clubId)
+          .then((value) => Navigator.of(context).pop());
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dodaj nowy skład'),
+        title: const Text('Dodaj nowy skład'),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-            margin: const EdgeInsets.all(10),
-            child: Form(
-                key: _form,
-                child: Column(children: <Widget>[
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Nazwa składu',
-                      prefixIcon: Icon(Icons.description),
-                    ),
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.text,
-                    onSaved: (value) => {newSquad.name = value},
-                    validator: (value) =>
-                        value.isNotEmpty ? null : ErrorsText.requiredErrorText,
-                  ),
-                  DropdownButtonFormField(
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.fiber_manual_record),
-                          labelText: 'Formacja'),
-                      items: formationList,
-                      value: 0,
-                      onChanged: (value) {
-                        setState(() {
-                          newSquad.formation = Squad.formationList[value];
-                        });
-                      }),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 40, 0, 10),
-                    child: Text(
-                      'Skład:',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                  DropdownButtonFormField(
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.person),
-                          labelText: 'Bramkarz'),
-                      items: goalkeepersList,
-                      validator: (value) =>
-                          validatePlayer(value, goalkeepers, 0),
-                      onChanged: (value) {
-                        newSquad.playersId[0] = goalkeepers[value].id;
-                      }),
-                  ...new List<Widget>.generate(
-                      newSquad.formation[1],
-                      (int index) => DropdownButtonFormField(
+      body: _isLoading == true
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Form(
+                      key: _form,
+                      child: Column(children: <Widget>[
+                        TextFormField(
                           decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.person),
-                              labelText: 'Obrońca'),
-                          items: defendersList,
-                          validator: (value) =>
-                              validatePlayer(value, defenders, 1 + index),
-                          onChanged: (value) {
-                            newSquad.playersId[1 + index] = defenders[value].id;
-                          })),
-                  ...new List<Widget>.generate(
-                    newSquad.formation[2],
-                    (int index) => DropdownButtonFormField(
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.person),
-                          labelText: 'Pomocnik'),
-                      items: midfieldersList,
-                      validator: (value) => validatePlayer(value, midfielders,
-                          1 + newSquad.formation[1] + index),
-                      onChanged: (value) => {
-                        newSquad.playersId[1 + newSquad.formation[1] + index] =
-                            midfielders[value].id
-                      },
-                    ),
-                  ),
-                  ...new List<Widget>.generate(
-                      newSquad.formation[3],
-                      (int index) => DropdownButtonFormField(
-                          decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.person),
-                              labelText: 'Napastnik'),
-                          items: strikersList,
-                          validator: (value) => validatePlayer(
-                              value,
-                              strikers,
-                              1 +
+                            labelText: 'Nazwa składu',
+                            prefixIcon: const Icon(Icons.description),
+                          ),
+                          textInputAction: TextInputAction.done,
+                          keyboardType: TextInputType.text,
+                          onSaved: (value) => {newSquad.name = value},
+                          validator: (value) => value.isNotEmpty
+                              ? null
+                              : ErrorsText.requiredErrorText,
+                        ),
+                        DropdownButtonFormField(
+                            decoration: InputDecoration(
+                                prefixIcon:
+                                    const Icon(Icons.fiber_manual_record),
+                                labelText: 'Formacja'),
+                            items: formationList,
+                            value: 0,
+                            onChanged: (value) {
+                              setState(() {
+                                newSquad.formation = Squad.formationList[value];
+                              });
+                            }),
+                        Container(
+                          margin: const EdgeInsets.fromLTRB(0, 40, 0, 10),
+                          child: Text(
+                            'Skład:',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                        DropdownButtonFormField(
+                            decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.person),
+                                labelText: 'Bramkarz'),
+                            items: goalkeepersList,
+                            validator: (value) =>
+                                validatePlayer(value, goalkeepers, 0),
+                            onChanged: (value) {
+                              newSquad.playersId[0] = goalkeepers[value].id;
+                            }),
+                        ...new List<Widget>.generate(
+                            newSquad.formation[1],
+                            (int index) => DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.person),
+                                    labelText: 'Obrońca'),
+                                items: defendersList,
+                                validator: (value) =>
+                                    validatePlayer(value, defenders, 1 + index),
+                                onChanged: (value) {
+                                  newSquad.playersId[1 + index] =
+                                      defenders[value].id;
+                                })),
+                        ...new List<Widget>.generate(
+                          newSquad.formation[2],
+                          (int index) => DropdownButtonFormField(
+                            decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.person),
+                                labelText: 'Pomocnik'),
+                            items: midfieldersList,
+                            validator: (value) => validatePlayer(value,
+                                midfielders, 1 + newSquad.formation[1] + index),
+                            onChanged: (value) => {
+                              newSquad.playersId[1 +
                                   newSquad.formation[1] +
-                                  newSquad.formation[2] +
-                                  index),
-                          onChanged: (value) => {
-                                newSquad.playersId[1 +
-                                    newSquad.formation[1] +
-                                    newSquad.formation[2] +
-                                    index] = strikers[value].id
-                              })),
-                ]))),
-      ),
+                                  index] = midfielders[value].id
+                            },
+                          ),
+                        ),
+                        ...new List<Widget>.generate(
+                            newSquad.formation[3],
+                            (int index) => DropdownButtonFormField(
+                                decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.person),
+                                    labelText: 'Napastnik'),
+                                items: strikersList,
+                                validator: (value) => validatePlayer(
+                                    value,
+                                    strikers,
+                                    1 +
+                                        newSquad.formation[1] +
+                                        newSquad.formation[2] +
+                                        index),
+                                onChanged: (value) => {
+                                      newSquad.playersId[1 +
+                                          newSquad.formation[1] +
+                                          newSquad.formation[2] +
+                                          index] = strikers[value].id
+                                    })),
+                      ]))),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => onSubmit(),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         backgroundColor: Colors.green,
       ),
     );

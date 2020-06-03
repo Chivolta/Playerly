@@ -18,32 +18,41 @@ class MyMatchesScreen extends StatefulWidget {
 }
 
 class _MyMatchesScreenState extends State<MyMatchesScreen> {
-  bool isInit = false;
+  var _isInit = false;
+  var _isLoading = false;
 
   @override
   void didChangeDependencies() {
-    if (isInit == false) {
-      final clubsProvider = Provider.of<MyClubs>(context, listen: false);
-      final timetablesProvider =
-          Provider.of<Timetables>(context, listen: false);
-      final matchesProvider = Provider.of<MyMatches>(context, listen: false);
-      matchesProvider.getAllMatchesFromTimetable(
-          clubsProvider.getActiveClub().id,
-          timetablesProvider.getSelectedTimetable().id);
-
+    if (_isInit == false) {
+      setState(() {
+        _isLoading = true;
+      });
+      final clubsProvider = Provider.of<MyClubs>(context);
+      final timetablesProvider = Provider.of<Timetables>(context);
+      final matchesProvider = Provider.of<MyMatches>(context);
       final squadsProvider = Provider.of<Squads>(context);
-      squadsProvider.getAllSquadsFromClub(clubsProvider.getActiveClub().id);
+
+      matchesProvider
+          .getAllMatchesFromTimetable(clubsProvider.getActiveClub().id,
+              timetablesProvider.getSelectedTimetable().id)
+          .then((_) => squadsProvider
+              .getAllSquadsFromClub(clubsProvider.getActiveClub().id))
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+
+      _isInit = true;
       super.didChangeDependencies();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    isInit = true;
     final myMatchesProvider = Provider.of<MyMatches>(context);
-    final myTimetablesProvider =
-        Provider.of<Timetables>(context, listen: false);
-    final myClubsProvider = Provider.of<MyClubs>(context, listen: false);
+    final myTimetablesProvider = Provider.of<Timetables>(context);
+    final myClubsProvider = Provider.of<MyClubs>(context);
     final squadsProvider = Provider.of<Squads>(context);
 
     final selectedClub = myClubsProvider.getActiveClub();
@@ -64,47 +73,49 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mecze'),
+        title: const Text('Mecze'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () =>
                 Navigator.of(context).pushNamed(AddMyMatchScreen.routeName),
           )
         ],
       ),
-      body: ListView(
-        children: myMatches
-            .map((m) => InkWell(
-                  child: Card(
-                    margin: EdgeInsets.all(1),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Text(
-                                '${selectedClub.name} vs ${m.opponentName}'),
+      body: _isLoading == true
+          ? Center(child: CircularProgressIndicator())
+          : ListView(
+              children: myMatches
+                  .map((m) => InkWell(
+                        child: Card(
+                          margin: const EdgeInsets.all(1),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Text(
+                                      '${selectedClub.name} vs ${m.opponentName}'),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Text('Miejsce: ${m.stadiumName}.'),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Text('Data: ${m.datetimeMatch}'),
+                                ),
+                                Text(
+                                    'Wybrany skład: ${getSelectedSquad(m.squadId).name}'),
+                              ],
+                            ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Text('Miejsce: ${m.stadiumName}.'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Text('Data: ${m.datetimeMatch}'),
-                          ),
-                          Text(
-                              'Wybrany skład: ${getSelectedSquad(m.squadId).name}'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  onTap: () => {showSelectedMyMatch(context, m.id)},
-                ))
-            .toList(),
-      ),
+                        ),
+                        onTap: () => {showSelectedMyMatch(context, m.id)},
+                      ))
+                  .toList(),
+            ),
     );
   }
 }

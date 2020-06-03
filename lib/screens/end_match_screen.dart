@@ -16,13 +16,13 @@ class _EndMatchScreenState extends State<EndMatchScreen> {
   @override
   Widget build(BuildContext context) {
     final _form = GlobalKey<FormState>();
-    final myMatchesProvider = Provider.of<MyMatches>(context, listen: false);
-    final clubsProvider = Provider.of<MyClubs>(context, listen: false);
-    final timetableProvider = Provider.of<Timetables>(context, listen: false);
+    final myMatchesProvider = Provider.of<MyMatches>(context);
+    final clubsProvider = Provider.of<MyClubs>(context);
+    final timetablesProvider = Provider.of<Timetables>(context);
 
     final selectedMyMatch = myMatchesProvider.getSelectedMyMatch();
     final selectedMyClub = clubsProvider.getActiveClub();
-    final selectedTimetable = timetableProvider.getSelectedTimetable();
+    final selectedTimetable = timetablesProvider.getSelectedTimetable();
 
     MyMatch selectedMyMatchCopy = MyMatch(
       id: selectedMyMatch.id,
@@ -48,11 +48,7 @@ class _EndMatchScreenState extends State<EndMatchScreen> {
         selectedMyMatchCopy,
       );
 
-      final clubsProvider = Provider.of<MyClubs>(context, listen: false);
-      final timetablesProvider =
-          Provider.of<Timetables>(context, listen: false);
-      final matchesProvider = Provider.of<MyMatches>(context, listen: false);
-      matchesProvider.getAllMatchesFromTimetable(
+      myMatchesProvider.getAllMatchesFromTimetable(
           clubsProvider.getActiveClub().id,
           timetablesProvider.getSelectedTimetable().id);
       Navigator.of(context).pop();
@@ -101,7 +97,7 @@ class _EndMatchScreenState extends State<EndMatchScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => onSubmit(),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         backgroundColor: Colors.green,
       ),
     );

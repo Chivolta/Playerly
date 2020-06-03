@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../screens/settings_screen.dart';
+import '../screens/sponsors_screen.dart';
 import '../screens/club_management_screen.dart';
 import '../screens/employees_screen.dart';
 import '../screens/finances_screen.dart';
@@ -21,8 +24,8 @@ class ClubManagementDrawer extends StatelessWidget {
             color: Colors.purple,
             width: double.infinity,
             alignment: Alignment.center,
-            padding: EdgeInsets.all(20),
-            child: Text(
+            padding: const EdgeInsets.all(20),
+            child: const Text(
               'Menu',
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
@@ -31,40 +34,50 @@ class ClubManagementDrawer extends StatelessWidget {
             height: 20,
           ),
           ListTile(
-            leading: Icon(Icons.description),
-            title: Text('Podsumowanie'),
+            leading: const Icon(Icons.description),
+            title: const Text('Podsumowanie'),
             onTap: () =>
                 {navigateToScreen(context, ClubManagementScreen.routeName)},
           ),
           ListTile(
-            leading: Icon(Icons.people),
-            title: Text('Zawodnicy'),
+            leading: const Icon(Icons.people),
+            title: const Text('Zawodnicy'),
             onTap: () => {navigateToScreen(context, PlayersScreen.routeName)},
           ),
           ListTile(
-            leading: Icon(Icons.people_outline),
-            title: Text('Pracownicy'),
+            leading: const Icon(Icons.people_outline),
+            title: const Text('Pracownicy'),
             onTap: () => {navigateToScreen(context, EmployeesScreen.routeName)},
           ),
           ListTile(
-            leading: Icon(Icons.view_module),
-            title: Text('Składy'),
+            leading: const Icon(Icons.view_module),
+            title: const Text('Składy'),
             onTap: () => {navigateToScreen(context, SquadsScreen.routeName)},
           ),
           ListTile(
-            leading: Icon(Icons.date_range),
-            title: Text('Terminarze'),
+            leading: const Icon(Icons.date_range),
+            title: const Text('Terminarze'),
             onTap: () =>
                 {navigateToScreen(context, TimetablesScreen.routeName)},
           ),
           ListTile(
-            leading: Icon(Icons.attach_money),
-            title: Text('Finanse'),
+            leading: const Icon(Icons.attach_money),
+            title: const Text('Finanse'),
             onTap: () => {navigateToScreen(context, FinancesScreen.routeName)},
           ),
           ListTile(
-            leading: Icon(Icons.description),
-            title: Text('Wybór klubów'),
+            leading: const Icon(Icons.add_shopping_cart),
+            title: const Text('Sponsorzy'),
+            onTap: () => {navigateToScreen(context, SponsorsScreen.routeName)},
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Ustawienia'),
+            onTap: () => {navigateToScreen(context, SettingsScreen.routeName)},
+          ),
+          ListTile(
+            leading: const Icon(Icons.description),
+            title: const Text('Wybór klubów'),
             onTap: () =>
                 {Navigator.of(context).popUntil(ModalRoute.withName('/'))},
           )

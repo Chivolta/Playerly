@@ -8,16 +8,9 @@ class ClubManagementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final myClubsProvider = Provider.of<MyClubs>(context, listen: false);
-    final clubId = ModalRoute.of(context).settings.arguments as String;
-
-    if (clubId != null) {
-      myClubsProvider.setActiveClub(clubId);
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Podsumowanie'),
+        title: const Text('Podsumowanie'),
       ),
       drawer: ClubManagementDrawer(),
       body: Text('test'),

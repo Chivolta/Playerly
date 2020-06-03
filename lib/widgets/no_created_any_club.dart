@@ -15,33 +15,33 @@ class NoCreatedAnyClub extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
+            child: const Text(
               'Nie masz jeszcze żadnego klubu, którym zarządzasz.',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
               ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
+            child: const Text(
               'Naciśnij przycisk poniżej, aby dodać nowy klub',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
               ),
             ),
           ),
           Container(
-              margin: EdgeInsets.symmetric(vertical: 10),
+              margin: const EdgeInsets.symmetric(vertical: 10),
               child: Ink(
                 decoration: const ShapeDecoration(
                   color: Colors.blue,
-                  shape: CircleBorder(),
+                  shape: const CircleBorder(),
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   color: Colors.white,
                   onPressed: () => addClub(context),
                 ),

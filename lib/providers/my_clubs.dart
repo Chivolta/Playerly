@@ -22,7 +22,8 @@ class MyClubs with ChangeNotifier {
     _activeClub = getMyClubById(clubId);
   }
 
-  getAllClubs() async {
+  Future<void> getAllClubs() async {
+    print('Getting all clubs');
     await databaseReference.collection("clubs").getDocuments().then((value) {
       var clubs = value.documents.map((e) => MyClub.fromFirestore(e)).toList();
       _myClubs = clubs;
@@ -35,15 +36,20 @@ class MyClubs with ChangeNotifier {
   }
 
   // TODO: Usuwanie reszty rzeczy
-  deleteClub(clubId) async {
-    databaseReference
-        .collection('clubs')
-        .document(clubId)
-        .delete()
-        .then((value) => print('deleted'));
+  Future<void> deleteClub(clubId) async {
+    print('Deleting club');
+    var deletedIndex = _myClubs.indexWhere((c) => c.id == clubId);
+    // var deletedClub = _myClubs[deletedIndex];
+    _myClubs.removeAt(deletedIndex);
+
+    try {
+      await databaseReference.collection('clubs').document(clubId).delete();
+      notifyListeners();
+    } catch (error) {}
   }
 
-  void addMyClub(MyClub club, newSponsors, context) async {
+  Future<void> addMyClub(MyClub club, newSponsors, context) async {
+    print('Adding my club');
     final mySponsorsProvider = Provider.of<Sponsors>(context, listen: false);
     DocumentReference ref = await databaseReference.collection("clubs").add({
       'name': club.name,
@@ -60,7 +66,7 @@ class MyClubs with ChangeNotifier {
       mySponsorsProvider.addSponsors(newSponsors, club.id);
     }
 
-    notifyListeners(); // notify all widgets about changes - so we used ChangeNotifier
+    notifyListeners();
   }
 
   MyClub getMyClubById(clubId) {
