@@ -171,18 +171,21 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
 
       if (goalkeepers.length < 1) {
         showAlertDialog(context, 'Potrzebujesz conajmniej 1 bramkarza!');
+        _isLoading = false;
         return;
       }
 
       var defenders = playersProvider.getDefendersFromClub();
       if (defenders.length < 4) {
         showAlertDialog(context, 'Potrzebujesz conajmniej 4 obrońców!');
+        _isLoading = false;
         return;
       }
 
       var midfielders = playersProvider.getMidfieldersFromClub();
       if (midfielders.length < 4) {
         showAlertDialog(context, 'Potrzebujesz conajmniej 4 pomocników!');
+        _isLoading = false;
         return;
       }
 
@@ -190,6 +193,7 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
 
       if (strikers.length < 2) {
         showAlertDialog(context, 'Potrzebujesz conajmniej 2 napastników!');
+        _isLoading = false;
         return;
       }
 
