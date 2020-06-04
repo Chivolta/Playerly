@@ -1,3 +1,4 @@
+import 'package:com.playerly/providers/player_matches_statistics.dart';
 import 'package:com.playerly/screens/rate_players_screen.dart';
 import 'package:flutter/material.dart';
 import '../providers/my_clubs.dart';
@@ -35,21 +36,19 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
       final clubId = clubsProvider.getActiveClub().id;
       final timetableId = timetablesProvider.getSelectedTimetable().id;
 
+      final selectedMyMatch = matchesProvider.getSelectedMyMatch();
+      final matchId = selectedMyMatch.id;
       matchesProvider
           .getAllMatchesFromTimetable(
             clubId,
             timetableId,
           )
+          .then((_) => matchesProvider.checkIfPlayersWereRated(
+              clubId, timetableId, matchId))
           .then((_) => squadsProvider.getAllSquadsFromClub(clubId))
           .then((_) {
-        final selectedMyMatch = matchesProvider.getSelectedMyMatch();
-        final matchId = selectedMyMatch.id;
-        matchesProvider
-            .checkIfPlayersWereRated(clubId, timetableId, matchId)
-            .then((value) {
-          setState(() {
-            _isLoading = false;
-          });
+        setState(() {
+          _isLoading = false;
         });
       });
 
@@ -64,7 +63,6 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
     final myMatchesProvider = Provider.of<MyMatches>(context);
     final myClubsProvider = Provider.of<MyClubs>(context);
     final squadsProvider = Provider.of<Squads>(context);
-
     final selectedClub = myClubsProvider.getActiveClub();
 
     final selectedMyMatch = myMatchesProvider.getSelectedMyMatch();
@@ -150,7 +148,9 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
                                     .pushNamed(RatePlayersScreen.routeName)
                               },
                             )
-                          : Text(''),
+                          : selectedMyMatch.isEnd == true
+                              ? Text('Zawodnicy zostali już ocenieni')
+                              : Text(''),
                     ],
                   )
                 ],

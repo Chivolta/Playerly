@@ -16,7 +16,6 @@ class MyMatches with ChangeNotifier {
   }
 
   bool getIfPlayersWereRated() {
-    print(_ifPlayersWereRated);
     return _ifPlayersWereRated;
   }
 
@@ -26,6 +25,35 @@ class MyMatches with ChangeNotifier {
 
   MyMatch getSelectedMyMatch() {
     return _selectedMyMatch;
+  }
+
+  Future<double> getSumOfRevenuesFromAllMatches(clubId) async {
+    var timetablesQuery = await databaseReference
+        .collection("clubs")
+        .document(clubId)
+        .collection('timetables')
+        .getDocuments();
+
+    var timetables = timetablesQuery.documents;
+
+    var sum = 0.0;
+    for (var t in timetables) {
+      var matchesQuery = await databaseReference
+          .collection("clubs")
+          .document(clubId)
+          .collection('timetables')
+          .document(t.documentID)
+          .collection('matches')
+          .getDocuments();
+
+      var matches = matchesQuery.documents;
+
+      for (var m in matches) {
+        sum += m.data['revenue'];
+      }
+    }
+
+    return sum;
   }
 
   Future<void> checkIfPlayersWereRated(clubId, timetableId, matchId) async {

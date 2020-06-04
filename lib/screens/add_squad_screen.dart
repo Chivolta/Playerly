@@ -151,7 +151,6 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
       }
 
       _form.currentState.save();
-      newSquad.id = Functions.generateId();
       squadsProvider
           .addSquad(newSquad, clubId)
           .then((value) => Navigator.of(context).pop());

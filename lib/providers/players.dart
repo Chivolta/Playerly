@@ -10,6 +10,26 @@ class Players with ChangeNotifier {
     return [..._players];
   }
 
+  Player getPlayerById(playerId) {
+    try {
+      return _players.firstWhere((p) {
+        print(playerId);
+        return p.id == playerId;
+      });
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  double getSumOfPlayersSalary() {
+    var sum = 0.0;
+    _players.forEach((player) {
+      sum += player.salary;
+    });
+    return sum;
+  }
+
   Future<void> addPlayer(Player player, clubId) async {
     print('Adding player');
 

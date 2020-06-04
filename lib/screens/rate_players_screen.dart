@@ -26,6 +26,8 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
   var _isInjuredList = [];
   var _ratingsList = [];
   final _form = GlobalKey<FormState>();
+  List<PlayerMatchStatistics> playerMatchesStatistics = [];
+  final List<Player> playersFormActiveSquad = [];
 
   void didChangeDependencies() {
     if (_isInit == false) {
@@ -33,12 +35,42 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
         _isLoading = true;
       });
 
+      final squadsProvider = Provider.of<Squads>(context);
+      Squad getSelectedSquad(squadId) {
+        return squadsProvider.getSquadById(squadId);
+      }
+
       final myClubsProvider = Provider.of<MyClubs>(context);
       final playersProvider = Provider.of<Players>(context);
+      final myMatchesProvider = Provider.of<MyMatches>(context);
       final clubId = myClubsProvider.getActiveClub().id;
+      final selectedMyMatch = myMatchesProvider.getSelectedMyMatch();
 
+      Squad selectedSquad = getSelectedSquad(selectedMyMatch.squadId);
       playersProvider.getAllPlayerFromClub(clubId).then((_) {
+        final playersFromClub = playersProvider.items;
+
+        for (var i = 0; i < playersFromClub.length; i++) {
+          for (var j = 0; j < selectedSquad.playersId.length; j++) {
+            if (playersFromClub[i].id == selectedSquad.playersId[j]) {
+              setState(() {
+                playersFormActiveSquad.add(playersFromClub[i]);
+
+                playerMatchesStatistics.add(PlayerMatchStatistics(
+                    id: '',
+                    goals: 0,
+                    rating: 0.0,
+                    goalsConceded: 0,
+                    isInjured: false,
+                    playerId: playersFromClub[i].id));
+              });
+
+              break;
+            }
+          }
+        }
         setState(() {
+          print(playersFormActiveSquad.length);
           _isLoading = false;
         });
       });
@@ -51,52 +83,17 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
   @override
   Widget build(BuildContext context) {
     final myMatchesProvider = Provider.of<MyMatches>(context);
-    final myClubsProvider = Provider.of<MyClubs>(context);
-    final squadsProvider = Provider.of<Squads>(context);
-    final playersProvider = Provider.of<Players>(context);
-    final timetablesProvider = Provider.of<Timetables>(context);
+    final selectedMyMatch = myMatchesProvider.getSelectedMyMatch();
+    final matchId = selectedMyMatch.id;
 
-    List<PlayerMatchStatistics> playerMatchesStatistics = [];
+    final myClubsProvider = Provider.of<MyClubs>(context);
+    final clubId = myClubsProvider.getActiveClub().id;
 
     final playerMatchesStatisticsProvider =
         Provider.of<PlayerMatchesStatistics>(context);
 
-    Squad getSelectedSquad(squadId) {
-      return squadsProvider.getSquadById(squadId);
-    }
-
-    final selectedTimetable = timetablesProvider.getSelectedTimetable();
-    final timetableId = selectedTimetable.id;
-
-    final selectedClub = myClubsProvider.getActiveClub();
-    final clubId = selectedClub.id;
-
-    final selectedMyMatch = myMatchesProvider.getSelectedMyMatch();
-    final matchId = selectedMyMatch.id;
-
-    final playersFromClub = playersProvider.items;
-    final List<Player> playersFormActiveSquad = [];
-
-    Squad selectedSquad = getSelectedSquad(selectedMyMatch.squadId);
-
-    for (var i = 0; i < playersFromClub.length; i++) {
-      for (var j = 0; j < selectedSquad.playersId.length; j++) {
-        if (playersFromClub[i].id == selectedSquad.playersId[j]) {
-          playersFormActiveSquad.add(playersFromClub[i]);
-
-          _isInjuredList.add(false);
-          _ratingsList.add(0.0);
-
-          playerMatchesStatistics.add(PlayerMatchStatistics(
-              id: '',
-              goals: 0,
-              rating: 0.0,
-              goalsConceded: 0,
-              isInjured: false,
-              playerId: playersFromClub[i].id));
-        }
-      }
-    }
+    final timetablesProvider = Provider.of<Timetables>(context);
+    final timetableId = timetablesProvider.getSelectedTimetable().id;
 
     var goalkeepers = playersFormActiveSquad
         .where((p) => p.position == Position.Goalkeeper)
@@ -141,10 +138,9 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
       );
     }
 
-    onSubmit() {
+    onSubmit() async {
       var isValid = _form.currentState.validate();
       _form.currentState.save();
-
       var sumOfOurGoals = 0;
       var sumOfOponnentGoals = 0;
       for (var i = 0; i < playerMatchesStatistics.length; i++) {
@@ -152,8 +148,6 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
         sumOfOponnentGoals += playerMatchesStatistics[i].goalsConceded;
       }
 
-      print(sumOfOurGoals);
-      print(selectedMyMatch.ourGoals);
       if (sumOfOurGoals != selectedMyMatch.ourGoals) {
         isValid = false;
         showAlertDialog(context,
@@ -172,28 +166,20 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
 
       _isLoading = true;
 
-      for (var i = 0; i < playerMatchesStatistics.length; i++) {
-        playerMatchesStatistics[i].isInjured = _isInjuredList[i];
-        playerMatchesStatistics[i].rating = _ratingsList[i];
-
-        playerMatchesStatisticsProvider
-            .addPlayerMatchStatistics(
-          playerMatchesStatistics[i],
+      for (var p in playerMatchesStatistics) {
+        await playerMatchesStatisticsProvider.addPlayerMatchStatistics(
+          p,
           clubId,
           timetableId,
           matchId,
-          playerMatchesStatistics[i].playerId,
-        )
-            .then((value) {
-          if (playerMatchesStatistics[playerMatchesStatistics.length - 1]
-                  .playerId ==
-              playerMatchesStatistics[i].playerId) {
-            myMatchesProvider
-                .checkIfPlayersWereRated(clubId, timetableId, matchId)
-                .then((value) => Navigator.of(context).pop());
-          }
-        });
+          p.playerId,
+        );
       }
+
+      await myMatchesProvider.checkIfPlayersWereRated(
+          clubId, timetableId, matchId);
+
+      Navigator.of(context).pop();
     }
 
     return Scaffold(
@@ -229,7 +215,9 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                       ),
                                     ),
                                     RatingBar(
-                                      initialRating: _ratingsList[0],
+                                      initialRating: playerMatchesStatistics
+                                          .firstWhere((g) => p.id == g.playerId)
+                                          .rating,
                                       minRating: 1,
                                       direction: Axis.horizontal,
                                       allowHalfRating: true,
@@ -241,7 +229,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                         color: Colors.amber,
                                       ),
                                       onRatingUpdate: (rating) {
-                                        _ratingsList[0] = rating;
+                                        playerMatchesStatistics
+                                            .firstWhere(
+                                                (g) => p.id == g.playerId)
+                                            .rating = rating;
                                       },
                                     ),
                                     TextFormField(
@@ -252,7 +243,9 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             .digitsOnly
                                       ],
                                       onSaved: (value) {
-                                        playerMatchesStatistics[0]
+                                        playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
                                                 .goalsConceded =
                                             value.isNotEmpty
                                                 ? int.parse(value)
@@ -270,7 +263,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             .digitsOnly
                                       ],
                                       onSaved: (value) => {
-                                        playerMatchesStatistics[0].goals =
+                                        playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .goals =
                                             value.isNotEmpty
                                                 ? int.parse(value)
                                                 : 0
@@ -281,10 +277,15 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                     ),
                                     CheckboxListTile(
                                       title: const Text('Kontuzja'),
-                                      value: _isInjuredList[0],
+                                      value: playerMatchesStatistics
+                                          .firstWhere((g) => p.id == g.playerId)
+                                          .isInjured,
                                       onChanged: (bool value) {
                                         setState(() {
-                                          _isInjuredList[0] = value;
+                                          playerMatchesStatistics
+                                              .firstWhere(
+                                                  (g) => p.id == g.playerId)
+                                              .isInjured = value;
                                         });
                                       },
                                     ),
@@ -315,8 +316,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                           ),
                                         ),
                                         RatingBar(
-                                          initialRating: _ratingsList[
-                                              goalkeepers.length + i],
+                                          initialRating: playerMatchesStatistics
+                                              .firstWhere(
+                                                  (g) => p.id == g.playerId)
+                                              .rating,
                                           minRating: 1,
                                           direction: Axis.horizontal,
                                           allowHalfRating: true,
@@ -328,8 +331,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             color: Colors.amber,
                                           ),
                                           onRatingUpdate: (rating) {
-                                            _ratingsList[goalkeepers.length +
-                                                i] = rating;
+                                            playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .rating = rating;
                                           },
                                         ),
                                         TextFormField(
@@ -340,12 +345,13 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                                 .digitsOnly
                                           ],
                                           onSaved: (value) => {
-                                            playerMatchesStatistics[
-                                                        goalkeepers.length + i]
-                                                    .goals =
-                                                value.isNotEmpty
-                                                    ? int.parse(value)
-                                                    : 0
+                                            playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .goals = value
+                                                    .isNotEmpty
+                                                ? int.parse(value)
+                                                : 0
                                           },
                                           decoration: InputDecoration(
                                               prefixIcon: Icon(Icons.add),
@@ -353,13 +359,16 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                         ),
                                         CheckboxListTile(
                                           title: const Text('Kontuzja'),
-                                          value: _isInjuredList[
-                                              goalkeepers.length + i],
+                                          value: playerMatchesStatistics
+                                              .firstWhere(
+                                                  (g) => p.id == g.playerId)
+                                              .isInjured,
                                           onChanged: (bool value) {
                                             setState(() {
-                                              _isInjuredList[
-                                                      goalkeepers.length + i] =
-                                                  value;
+                                              playerMatchesStatistics
+                                                  .firstWhere(
+                                                      (g) => p.id == g.playerId)
+                                                  .isInjured = value;
                                             });
                                           },
                                         ),
@@ -391,10 +400,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                           ),
                                         ),
                                         RatingBar(
-                                          initialRating: _ratingsList[
-                                              goalkeepers.length +
-                                                  defenders.length +
-                                                  i],
+                                          initialRating: playerMatchesStatistics
+                                              .firstWhere(
+                                                  (g) => p.id == g.playerId)
+                                              .rating,
                                           minRating: 1,
                                           direction: Axis.horizontal,
                                           allowHalfRating: true,
@@ -406,9 +415,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             color: Colors.amber,
                                           ),
                                           onRatingUpdate: (rating) {
-                                            _ratingsList[goalkeepers.length +
-                                                defenders.length +
-                                                i] = rating;
+                                            playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .rating = rating;
                                           },
                                         ),
                                         TextFormField(
@@ -419,14 +429,13 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                                 .digitsOnly
                                           ],
                                           onSaved: (value) => {
-                                            playerMatchesStatistics[
-                                                        goalkeepers.length +
-                                                            defenders.length +
-                                                            i]
-                                                    .goals =
-                                                value.isNotEmpty
-                                                    ? int.parse(value)
-                                                    : 0
+                                            playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .goals = value
+                                                    .isNotEmpty
+                                                ? int.parse(value)
+                                                : 0
                                           },
                                           decoration: InputDecoration(
                                               prefixIcon: Icon(Icons.add),
@@ -434,16 +443,16 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                         ),
                                         CheckboxListTile(
                                           title: const Text('Kontuzja'),
-                                          value: _isInjuredList[
-                                              goalkeepers.length +
-                                                  defenders.length +
-                                                  i],
+                                          value: playerMatchesStatistics
+                                              .firstWhere(
+                                                  (g) => p.id == g.playerId)
+                                              .isInjured,
                                           onChanged: (bool value) {
                                             setState(() {
-                                              _isInjuredList[
-                                                  goalkeepers.length +
-                                                      defenders.length +
-                                                      i] = value;
+                                              playerMatchesStatistics
+                                                  .firstWhere(
+                                                      (g) => p.id == g.playerId)
+                                                  .isInjured = value;
                                             });
                                           },
                                         ),
@@ -475,11 +484,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                           ),
                                         ),
                                         RatingBar(
-                                          initialRating: _ratingsList[
-                                              goalkeepers.length +
-                                                  defenders.length +
-                                                  midfielders.length +
-                                                  i],
+                                          initialRating: playerMatchesStatistics
+                                              .firstWhere(
+                                                  (g) => p.id == g.playerId)
+                                              .rating,
                                           minRating: 1,
                                           direction: Axis.horizontal,
                                           allowHalfRating: true,
@@ -491,10 +499,10 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             color: Colors.amber,
                                           ),
                                           onRatingUpdate: (rating) {
-                                            _ratingsList[goalkeepers.length +
-                                                defenders.length +
-                                                midfielders.length +
-                                                i] = rating;
+                                            playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .rating = rating;
                                           },
                                         ),
                                         TextFormField(
@@ -505,15 +513,13 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                                 .digitsOnly
                                           ],
                                           onSaved: (value) => {
-                                            playerMatchesStatistics[
-                                                        goalkeepers.length +
-                                                            defenders.length +
-                                                            midfielders.length +
-                                                            i]
-                                                    .goals =
-                                                value.isNotEmpty
-                                                    ? int.parse(value)
-                                                    : 0
+                                            playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .goals = value
+                                                    .isNotEmpty
+                                                ? int.parse(value)
+                                                : 0
                                           },
                                           decoration: InputDecoration(
                                               prefixIcon: Icon(Icons.add),
@@ -521,18 +527,16 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                         ),
                                         CheckboxListTile(
                                           title: const Text('Kontuzja'),
-                                          value: _isInjuredList[
-                                              goalkeepers.length +
-                                                  defenders.length +
-                                                  midfielders.length +
-                                                  i],
+                                          value: playerMatchesStatistics
+                                              .firstWhere(
+                                                  (g) => p.id == g.playerId)
+                                              .isInjured,
                                           onChanged: (bool value) {
                                             setState(() {
-                                              _isInjuredList[
-                                                  goalkeepers.length +
-                                                      defenders.length +
-                                                      midfielders.length +
-                                                      i] = value;
+                                              playerMatchesStatistics
+                                                  .firstWhere(
+                                                      (g) => p.id == g.playerId)
+                                                  .isInjured = value;
                                             });
                                           },
                                         ),

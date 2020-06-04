@@ -11,6 +11,29 @@ class Sponsors with ChangeNotifier {
     return [..._sponsors];
   }
 
+  double getSumOfRevenueFromSponsors() {
+    var sum = 0.0;
+    _sponsors.forEach((sponsor) {
+      sum += sponsor.revenue;
+    });
+    return sum;
+  }
+
+  Future<void> getAllSponsors(clubId) async {
+    print('Getting all sponsors');
+    await databaseReference
+        .collection("clubs")
+        .document(clubId)
+        .collection('sponsors')
+        .getDocuments()
+        .then((value) {
+      var sponsors =
+          value.documents.map((e) => Sponsor.fromFirestore(e)).toList();
+      _sponsors = sponsors;
+      notifyListeners();
+    });
+  }
+
   void addSponsors(List<Sponsor> sponsors, clubId) async {
     for (var i = 0; i < sponsors.length; i++) {
       DocumentReference ref = await databaseReference

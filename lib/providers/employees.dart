@@ -26,6 +26,14 @@ class Employees with ChangeNotifier {
     return [..._employees];
   }
 
+  double getSumOfEmployeesSalary() {
+    var sum = 0.0;
+    _employees.forEach((employee) {
+      sum += employee.salary;
+    });
+    return sum;
+  }
+
   // TODO: Usuwanie reszty rzeczy
   Future<void> deleteClub(clubId, employeeId) async {
     print('Deleting employee');
