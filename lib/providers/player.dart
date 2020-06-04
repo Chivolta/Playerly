@@ -15,7 +15,7 @@ class Player with ChangeNotifier {
   factory Player.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data;
 
-    Position position = null;
+    Position position;
 
     if (data['position'] == 0) {
       position = Position.Goalkeeper;

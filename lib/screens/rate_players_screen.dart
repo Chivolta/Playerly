@@ -23,8 +23,6 @@ class RatePlayersScreen extends StatefulWidget {
 class _RatePlayersScreenState extends State<RatePlayersScreen> {
   var _isInit = false;
   var _isLoading = false;
-  var _isInjuredList = [];
-  var _ratingsList = [];
   final _form = GlobalKey<FormState>();
   List<PlayerMatchStatistics> playerMatchesStatistics = [];
   final List<Player> playersFormActiveSquad = [];

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../helpers/errors_text.dart';
-import '../helpers/functions.dart';
 import '../providers/my_clubs.dart';
 import '../providers/player.dart';
 import '../providers/players.dart';

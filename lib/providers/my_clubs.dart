@@ -1,12 +1,10 @@
-import 'dart:convert';
+import '../providers/sponsors.dart';
+import '../providers/my_club.dart';
+import 'my_club.dart';
 
-import 'package:com.playerly/providers/sponsors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import '../providers/my_club.dart';
-
-import 'my_club.dart';
 
 class MyClubs with ChangeNotifier {
   List<MyClub> _myClubs = [];

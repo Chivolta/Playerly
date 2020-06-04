@@ -1,6 +1,4 @@
-import 'package:com.playerly/providers/player_matches_statistics.dart';
-import 'package:com.playerly/screens/rate_players_screen.dart';
-import 'package:flutter/material.dart';
+import '../screens/rate_players_screen.dart';
 import '../providers/my_clubs.dart';
 import '../providers/my_matches.dart';
 import '../providers/squad.dart';
@@ -8,6 +6,8 @@ import '../providers/squads.dart';
 import '../providers/timetables.dart';
 import '../screens/end_match_screen.dart';
 import '../widgets/ended_match_statistics.dart';
+
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MatchDescriptionScreen extends StatefulWidget {
@@ -20,7 +20,6 @@ class MatchDescriptionScreen extends StatefulWidget {
 class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
   var _isInit = false;
   var _isLoading = false;
-  var _isPlayersRated = false;
 
   @override
   void didChangeDependencies() {

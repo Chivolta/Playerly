@@ -1,5 +1,4 @@
-import 'package:com.playerly/helpers/functions.dart';
-import 'package:com.playerly/providers/squad.dart';
+import '../providers/squad.dart';
 
 import '../providers/player_matches_statistics.dart';
 import '../providers/players.dart';
@@ -27,7 +26,6 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
   final datetimeController = TextEditingController();
   var _isLoading = false;
   var _isInit = false;
-  var _parsedRatingList = [];
   var _selectedSquad = 0;
 
   void didChangeDependencies() {

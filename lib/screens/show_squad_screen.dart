@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../helpers/errors_text.dart';
-import '../helpers/functions.dart';
 import '../providers/my_clubs.dart';
 import '../providers/player.dart';
 import '../providers/players.dart';
@@ -41,13 +39,9 @@ class _ShowSquadScreenState extends State<ShowSquadScreen> {
   @override
   Widget build(BuildContext context) {
     final playersProvider = Provider.of<Players>(context);
-
-    final clubsData = Provider.of<MyClubs>(context);
     final squadsProvider = Provider.of<Squads>(context);
 
     final Squad activeSquad = squadsProvider.getSelectedSquad();
-
-    final clubId = clubsData.getActiveClub().id;
 
     final playersFromClub = playersProvider.items;
     final List<Player> playersFormActiveSquad = [];

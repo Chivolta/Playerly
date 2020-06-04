@@ -1,14 +1,13 @@
-import 'package:com.playerly/providers/my_match.dart';
-import 'package:flutter/material.dart';
+import '../providers/my_match.dart';
 import '../providers/my_matches.dart';
 import '../providers/timetables.dart';
 import '../providers/my_clubs.dart';
-import '../providers/my_matches.dart';
 import '../providers/squad.dart';
 import '../providers/squads.dart';
-import '../providers/timetables.dart';
 import '../screens/add_my_match_screen.dart';
 import '../screens/match_description_screen.dart';
+
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MyMatchesScreen extends StatefulWidget {
@@ -52,12 +51,10 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
   @override
   Widget build(BuildContext context) {
     final myMatchesProvider = Provider.of<MyMatches>(context);
-    final myTimetablesProvider = Provider.of<Timetables>(context);
     final myClubsProvider = Provider.of<MyClubs>(context);
     final squadsProvider = Provider.of<Squads>(context);
 
     final selectedClub = myClubsProvider.getActiveClub();
-    final selectedTimetable = myTimetablesProvider.getSelectedTimetable();
 
     final myMatches = myMatchesProvider.items;
 
@@ -83,6 +80,7 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
           return Colors.yellow[100];
         }
       }
+      return Colors.white;
     }
 
     String getMatchResultText(MyMatch m) {
@@ -96,6 +94,7 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
       if (m.ourGoals == m.opponentGoals) {
         return 'Remis ${m.ourGoals} - ${m.opponentGoals}';
       }
+      return '';
     }
 
     myMatches.sort((a, b) => (b.datetimeMatch).compareTo(a.datetimeMatch));

@@ -1,12 +1,12 @@
-import 'package:com.playerly/providers/employees.dart';
-import 'package:com.playerly/providers/my_clubs.dart';
-import 'package:com.playerly/providers/my_matches.dart';
-import 'package:com.playerly/providers/players.dart';
-import 'package:com.playerly/providers/sponsors.dart';
-import 'package:com.playerly/providers/timetables.dart';
+import '../providers/employees.dart';
+import '../providers/my_clubs.dart';
+import '../providers/my_matches.dart';
+import '../providers/players.dart';
+import '../providers/sponsors.dart';
+import '../widgets/club_management_drawer.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/club_management_drawer.dart';
 
 class FinancesScreen extends StatefulWidget {
   static const routeName = '/finances';
@@ -50,12 +50,9 @@ class _FinancesScreenState extends State<FinancesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final myClubsProvider = Provider.of<MyClubs>(context);
     final playersProvider = Provider.of<Players>(context);
     final employeesProvider = Provider.of<Employees>(context);
     final sponsorsProvider = Provider.of<Sponsors>(context);
-
-    final clubId = myClubsProvider.getActiveClub().id;
 
     var sumOfPlayersSalary = playersProvider.getSumOfPlayersSalary();
     var sumOfEmployeesSalary = employeesProvider.getSumOfEmployeesSalary();
@@ -79,14 +76,14 @@ class _FinancesScreenState extends State<FinancesScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Przychody: ${sumOfRevenues}\$',
+                          'Przychody: $sumOfRevenues\$',
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Wydatki: ${sumOfExpenses}\$',
+                          'Wydatki: $sumOfExpenses\$',
                           style: TextStyle(fontSize: 20),
                         ),
                       ),
@@ -108,28 +105,28 @@ class _FinancesScreenState extends State<FinancesScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Sponsorzy: +${sumOfSponsorsRevenues}\$',
+                          'Sponsorzy: +$sumOfSponsorsRevenues\$',
                           style: TextStyle(fontSize: 15),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Mecze: +${_sumOfMatchesRevenues}\$',
+                          'Mecze: +$_sumOfMatchesRevenues\$',
                           style: TextStyle(fontSize: 15),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Piłkarze: -${sumOfPlayersSalary}\$',
+                          'Piłkarze: -$sumOfPlayersSalary\$',
                           style: TextStyle(fontSize: 15),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Pracownicy: -${sumOfEmployeesSalary}\$',
+                          'Pracownicy: -$sumOfEmployeesSalary\$',
                           style: TextStyle(fontSize: 15),
                         ),
                       ),

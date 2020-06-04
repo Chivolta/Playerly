@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../providers/my_clubs.dart';
 import '../widgets/club_management_drawer.dart';
-import 'package:provider/provider.dart';
 
 class ClubManagementScreen extends StatelessWidget {
   static const routeName = '/club-management';

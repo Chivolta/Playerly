@@ -4,7 +4,6 @@ import '../providers/timetables.dart';
 import '../widgets/club_management_drawer.dart';
 import 'package:provider/provider.dart';
 
-import 'add_squad_screen.dart';
 import 'add_timetable_screen.dart';
 import 'my_matches_screen.dart';
 
