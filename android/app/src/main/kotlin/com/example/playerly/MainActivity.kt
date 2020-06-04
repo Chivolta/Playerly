@@ -1,4 +1,4 @@
-package com.example.playerly
+package com.playerly
 
 import io.flutter.embedding.android.FlutterActivity
 
