@@ -61,6 +61,11 @@ class _FinancesScreenState extends State<FinancesScreen> {
     var sumOfExpenses = sumOfEmployeesSalary + sumOfPlayersSalary;
     var sumOfRevenues = _sumOfMatchesRevenues + sumOfSponsorsRevenues;
 
+    final myClubsProvider = Provider.of<MyClubs>(context);
+    final clubId = myClubsProvider.getActiveClub().id;
+
+    var selectedClub = myClubsProvider.getActiveClub();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Finanse'),
@@ -91,6 +96,14 @@ class _FinancesScreenState extends State<FinancesScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           'Stan: ${sumOfRevenues - sumOfExpenses}\$',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Majątek: ${selectedClub.fortune}\$',
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),

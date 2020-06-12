@@ -11,6 +11,7 @@ class Player with ChangeNotifier {
   int number;
   Position position;
   double salary;
+  DateTime injuryTo;
 
   factory Player.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data;
@@ -41,6 +42,9 @@ class Player with ChangeNotifier {
       number: data['number'],
       position: position,
       salary: data['salary'],
+      injuryTo: data['injuryTo'] != null
+          ? DateTime.parse(data['injuryTo'].toDate().toString())
+          : null,
     );
   }
 
@@ -60,13 +64,13 @@ class Player with ChangeNotifier {
     return "";
   }
 
-  Player({
-    @required this.id,
-    @required this.name,
-    @required this.surname,
-    @required this.age,
-    @required this.number,
-    @required this.position,
-    @required this.salary,
-  });
+  Player(
+      {@required this.id,
+      @required this.name,
+      @required this.surname,
+      @required this.age,
+      @required this.number,
+      @required this.position,
+      @required this.salary,
+      this.injuryTo});
 }

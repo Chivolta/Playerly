@@ -138,8 +138,15 @@ class _MyMatchesScreenState extends State<MyMatchesScreen> {
                                   padding: const EdgeInsets.all(2.0),
                                   child: Text('Data: ${m.datetimeMatch}'),
                                 ),
-                                Text(
-                                    'Wybrany skład: ${getSelectedSquad(m.squadId).name}'),
+                                getSelectedSquad(m.squadId) != null
+                                    ? Text(
+                                        'Wybrany skład: ${getSelectedSquad(m.squadId).name}')
+                                    : Text(
+                                        'Skład został usunięty',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                 m.isEnd == true
                                     ? Padding(
                                         padding: const EdgeInsets.all(2.0),

@@ -49,7 +49,9 @@ class MyMatches with ChangeNotifier {
       var matches = matchesQuery.documents;
 
       for (var m in matches) {
-        sum += m.data['revenue'];
+        if (m.data['revenue'] != null) {
+          sum += m.data['revenue'];
+        }
       }
     }
 

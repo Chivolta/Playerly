@@ -28,6 +28,17 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
   var _isInit = false;
   var _selectedSquad = 0;
 
+  var newMyMatch = MyMatch(
+    id: '',
+    datetimeMatch: null,
+    opponentGoals: null,
+    opponentName: '',
+    ourGoals: null,
+    revenue: null,
+    squadId: null,
+    stadiumName: '',
+  );
+
   void didChangeDependencies() {
     if (_isInit == false) {
       setState(() {
@@ -49,17 +60,6 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
     super.didChangeDependencies();
   }
 
-  showDateTimePicker(context) {
-    DatePicker.showDateTimePicker(context,
-        currentTime: DateTime.now(),
-        minTime: DateTime.now().subtract(new Duration(days: 360)),
-        maxTime: DateTime.now().add(
-          new Duration(days: 360),
-        )).then((value) {
-      datetimeController.text = value.toString();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final myMatchesProvider = Provider.of<MyMatches>(context);
@@ -79,16 +79,19 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
 
     var squads = squadsProvider.items;
 
-    var newMyMatch = MyMatch(
-      id: '',
-      datetimeMatch: null,
-      opponentGoals: null,
-      opponentName: '',
-      ourGoals: null,
-      revenue: null,
-      squadId: squads.length > 0 ? squads[0].id : null,
-      stadiumName: '',
-    );
+    showDateTimePicker(context) {
+      DatePicker.showDateTimePicker(context,
+          currentTime: DateTime.now(),
+          minTime: DateTime.now().subtract(new Duration(days: 360)),
+          maxTime: DateTime.now().add(
+            new Duration(days: 360),
+          )).then((value) {
+        setState(() {
+          datetimeController.text = value.toString();
+          newMyMatch.datetimeMatch = value;
+        });
+      });
+    }
 
     List<DropdownMenuItem<int>> squadsList = [];
     showAlertDialog(BuildContext context, String message) {
@@ -162,37 +165,84 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
     createAutomateSquad() async {
       _isLoading = true;
       await playersProvider.getAllPlayerFromClub(clubId);
-      var goalkeepers = playersProvider.getGoalkeepersFromClub();
 
       var goalkeepersRatingList = [];
       var defendersRatingList = [];
       var midfieldersRatingList = [];
       var strikersRatingList = [];
 
+      var goalkeepers = playersProvider.getGoalkeepersFromClub().where((p) {
+        if (p.injuryTo != null) {
+          if (p.injuryTo.compareTo(DateTime.parse(datetimeController.text)) <
+              0) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      });
+
       if (goalkeepers.length < 1) {
-        showAlertDialog(context, 'Potrzebujesz conajmniej 1 bramkarza!');
+        showAlertDialog(
+            context, 'Potrzebujesz conajmniej 1 bramkarza bez kontuzji!');
         _isLoading = false;
         return;
       }
 
-      var defenders = playersProvider.getDefendersFromClub();
+      var defenders = playersProvider.getDefendersFromClub().where((p) {
+        if (p.injuryTo != null) {
+          if (p.injuryTo.compareTo(DateTime.parse(datetimeController.text)) <
+              0) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      });
+
       if (defenders.length < 4) {
-        showAlertDialog(context, 'Potrzebujesz conajmniej 4 obrońców!');
+        showAlertDialog(
+            context, 'Potrzebujesz conajmniej 4 obrońców bez kontuzji!');
         _isLoading = false;
         return;
       }
 
-      var midfielders = playersProvider.getMidfieldersFromClub();
+      var midfielders = playersProvider.getMidfieldersFromClub().where((p) {
+        if (p.injuryTo != null) {
+          if (p.injuryTo.compareTo(DateTime.parse(datetimeController.text)) <
+              0) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      });
+
       if (midfielders.length < 4) {
-        showAlertDialog(context, 'Potrzebujesz conajmniej 4 pomocników!');
+        showAlertDialog(
+            context, 'Potrzebujesz conajmniej 4 pomocników bez kontuzji!');
         _isLoading = false;
         return;
       }
 
-      var strikers = playersProvider.getStrikersFromClub();
+      var strikers = playersProvider.getStrikersFromClub().where((p) {
+        if (p.injuryTo != null) {
+          if (p.injuryTo.compareTo(DateTime.parse(datetimeController.text)) <
+              0) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return true;
+      });
 
       if (strikers.length < 2) {
-        showAlertDialog(context, 'Potrzebujesz conajmniej 2 napastników!');
+        showAlertDialog(
+            context, 'Potrzebujesz conajmniej 2 napastników bez kontuzji!');
         _isLoading = false;
         return;
       }
@@ -276,14 +326,13 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
           strikersRatingList[1]['playerId'],
         ],
       );
-
       await squadsProvider.addSquad(squad, clubId);
+      squads = squadsProvider.items;
 
       setState(() {
         loadSquadsList();
-        _selectedSquad = squads.length - 1;
-        print(_selectedSquad);
         newMyMatch.squadId = squads[_selectedSquad].id;
+        _selectedSquad = squads.length - 1;
         _isLoading = false;
       });
     }
@@ -333,6 +382,12 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
                         {newMyMatch.datetimeMatch = DateTime.parse(value)},
                     onTap: () => {showDateTimePicker(context)},
                     key: ObjectKey('xd'),
+                    onChanged: (value) {
+                      setState(() {
+                        datetimeController.text = value;
+                        newMyMatch.datetimeMatch = DateTime.parse(value);
+                      });
+                    },
                     validator: (value) =>
                         value.isNotEmpty ? null : ErrorsText.requiredErrorText,
                   ),
@@ -345,11 +400,19 @@ class _AddMyMatchScreenState extends State<AddMyMatchScreen> {
                       onChanged: (value) {
                         newMyMatch.squadId = squads[value].id;
                       }),
-                  RaisedButton(
-                    child: Text("Stwórz automatycznie skład"),
-                    color: Colors.orange,
-                    onPressed: () => createAutomateSquad(),
-                  )
+                  datetimeController.text.isNotEmpty
+                      ? RaisedButton(
+                          child: Text("Stwórz automatycznie skład"),
+                          color: Colors.orange,
+                          onPressed: () => createAutomateSquad(),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                                'Jeśli chcesz utworzyć automatycznie skład, wprowadź datę meczu'),
+                          ),
+                        )
                 ],
               )),
       floatingActionButton: FloatingActionButton(

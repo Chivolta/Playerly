@@ -97,7 +97,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                           labelText: 'Stanowisko'),
                       textInputAction: TextInputAction.next,
                       focusNode: _positionFocusNode,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                       onFieldSubmitted: (_) =>
                           FocusScope.of(context).requestFocus(_salaryFocusNode),
                       onSaved: (value) => {newEmployee.position = value},

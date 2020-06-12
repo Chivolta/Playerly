@@ -41,7 +41,8 @@ class PlayerMatchesStatistics with ChangeNotifier {
       'goals': playerMatchStatistics.goals,
       'goalsConceded': playerMatchStatistics.goalsConceded,
       'rating': playerMatchStatistics.rating,
-      'injuryTo': playerMatchStatistics.isInjured
+      'isInjured': playerMatchStatistics.isInjured,
+      'injuryTo': playerMatchStatistics.injuryTo
     });
 
     playerMatchStatistics.id = ref.documentID;

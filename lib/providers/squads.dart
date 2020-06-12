@@ -49,7 +49,7 @@ class Squads with ChangeNotifier {
   }
 
   Squad getSquadById(squadId) {
-    return _squads.firstWhere((c) => c.id == squadId);
+    return _squads.firstWhere((c) => c.id == squadId, orElse: () => null);
   }
 
   void setSelectedSquad(squadId) {

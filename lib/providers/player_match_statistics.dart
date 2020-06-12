@@ -7,6 +7,7 @@ class PlayerMatchStatistics {
   int goalsConceded;
   double rating;
   bool isInjured;
+  DateTime injuryTo;
 
   PlayerMatchStatistics({
     this.id,
@@ -15,6 +16,7 @@ class PlayerMatchStatistics {
     this.goalsConceded,
     this.rating,
     this.isInjured,
+    this.injuryTo,
   });
 
   factory PlayerMatchStatistics.fromFirestore(DocumentSnapshot doc) {
@@ -26,6 +28,7 @@ class PlayerMatchStatistics {
       goalsConceded: data['goalsConceded'],
       rating: data['grade'],
       isInjured: data['isInjured'],
+      injuryTo: DateTime.parse(data['injuryTo'].toDate().toString()),
     );
   }
 }

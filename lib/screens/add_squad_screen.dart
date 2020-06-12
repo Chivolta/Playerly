@@ -209,6 +209,8 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
                             validator: (value) =>
                                 validatePlayer(value, goalkeepers, 0),
                             onChanged: (value) {
+                              FocusScope.of(context)
+                                  .requestFocus(new FocusNode());
                               newSquad.playersId[0] = goalkeepers[value].id;
                             }),
                         ...new List<Widget>.generate(
@@ -221,6 +223,8 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
                                 validator: (value) =>
                                     validatePlayer(value, defenders, 1 + index),
                                 onChanged: (value) {
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
                                   newSquad.playersId[1 + index] =
                                       defenders[value].id;
                                 })),
@@ -233,10 +237,12 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
                             items: midfieldersList,
                             validator: (value) => validatePlayer(value,
                                 midfielders, 1 + newSquad.formation[1] + index),
-                            onChanged: (value) => {
+                            onChanged: (value) {
+                              FocusScope.of(context)
+                                  .requestFocus(new FocusNode());
                               newSquad.playersId[1 +
                                   newSquad.formation[1] +
-                                  index] = midfielders[value].id
+                                  index] = midfielders[value].id;
                             },
                           ),
                         ),
@@ -254,12 +260,14 @@ class _AddSquadScreenState extends State<AddSquadScreen> {
                                         newSquad.formation[1] +
                                         newSquad.formation[2] +
                                         index),
-                                onChanged: (value) => {
-                                      newSquad.playersId[1 +
-                                          newSquad.formation[1] +
-                                          newSquad.formation[2] +
-                                          index] = strikers[value].id
-                                    })),
+                                onChanged: (value) {
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
+                                  newSquad.playersId[1 +
+                                      newSquad.formation[1] +
+                                      newSquad.formation[2] +
+                                      index] = strikers[value].id;
+                                })),
                       ]))),
             ),
       floatingActionButton: FloatingActionButton(

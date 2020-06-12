@@ -1,4 +1,6 @@
+import 'package:com.playerly/helpers/errors_text.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,29 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
   final _form = GlobalKey<FormState>();
   List<PlayerMatchStatistics> playerMatchesStatistics = [];
   final List<Player> playersFormActiveSquad = [];
+  var datetimeControllerList = [];
+
+  showDateTimePicker(context, playerId) {
+    DatePicker.showDateTimePicker(context,
+        currentTime: DateTime.now(),
+        minTime: DateTime.now().subtract(new Duration(days: 360)),
+        maxTime: DateTime.now().add(
+          new Duration(days: 360),
+        )).then((value) {
+      setState(() {
+        TextEditingController textEditingController =
+            datetimeControllerList.firstWhere(
+                (g) => playerId == g['playerId'])['textEditingController'];
+        textEditingController.text = value.toString();
+
+        print(textEditingController.text);
+
+        playerMatchesStatistics
+            .firstWhere((g) => playerId == g.playerId)
+            .injuryTo = value;
+      });
+    });
+  }
 
   void didChangeDependencies() {
     if (_isInit == false) {
@@ -51,17 +76,19 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
         for (var i = 0; i < playersFromClub.length; i++) {
           for (var j = 0; j < selectedSquad.playersId.length; j++) {
             if (playersFromClub[i].id == selectedSquad.playersId[j]) {
-              setState(() {
-                playersFormActiveSquad.add(playersFromClub[i]);
-
-                playerMatchesStatistics.add(PlayerMatchStatistics(
-                    id: '',
-                    goals: 0,
-                    rating: 0.0,
-                    goalsConceded: 0,
-                    isInjured: false,
-                    playerId: playersFromClub[i].id));
+              playersFormActiveSquad.add(playersFromClub[i]);
+              datetimeControllerList.add({
+                'playerId': playersFromClub[i].id,
+                'textEditingController': TextEditingController()
               });
+
+              playerMatchesStatistics.add(PlayerMatchStatistics(
+                  id: '',
+                  goals: 0,
+                  rating: 0.0,
+                  goalsConceded: 0,
+                  isInjured: false,
+                  playerId: playersFromClub[i].id));
 
               break;
             }
@@ -83,7 +110,7 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
     final myMatchesProvider = Provider.of<MyMatches>(context);
     final selectedMyMatch = myMatchesProvider.getSelectedMyMatch();
     final matchId = selectedMyMatch.id;
-
+    final playersProvider = Provider.of<Players>(context);
     final myClubsProvider = Provider.of<MyClubs>(context);
     final clubId = myClubsProvider.getActiveClub().id;
 
@@ -163,6 +190,17 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
       }
 
       _isLoading = true;
+      for (var p in playerMatchesStatistics) {
+        await playersProvider.updatePlayerInjury(
+            clubId, p.playerId, p.injuryTo);
+        await playerMatchesStatisticsProvider.addPlayerMatchStatistics(
+          p,
+          clubId,
+          timetableId,
+          matchId,
+          p.playerId,
+        );
+      }
 
       for (var p in playerMatchesStatistics) {
         await playerMatchesStatisticsProvider.addPlayerMatchStatistics(
@@ -287,6 +325,50 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                         });
                                       },
                                     ),
+                                    playerMatchesStatistics
+                                                .firstWhere(
+                                                    (g) => p.id == g.playerId)
+                                                .isInjured ==
+                                            true
+                                        ? TextFormField(
+                                            decoration: InputDecoration(
+                                              labelText:
+                                                  'Zawodnik ma kontuzję do:',
+                                              prefixIcon:
+                                                  Icon(Icons.date_range),
+                                            ),
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            keyboardType:
+                                                TextInputType.datetime,
+                                            controller: datetimeControllerList
+                                                    .firstWhere((g) =>
+                                                        p.id == g['playerId'])[
+                                                'textEditingController'],
+                                            onSaved: (value) {
+                                              datetimeControllerList
+                                                  .firstWhere(
+                                                      (g) =>
+                                                          p.id ==
+                                                          g['playerId'])[
+                                                      'textEditingController']
+                                                  .text = value;
+                                              playerMatchesStatistics
+                                                      .firstWhere((g) =>
+                                                          p.id == g.playerId)
+                                                      .injuryTo =
+                                                  DateTime.parse(value);
+                                            },
+                                            onTap: () => {
+                                              showDateTimePicker(context, p.id)
+                                            },
+                                            key: ObjectKey(p.id),
+                                            validator: (value) => value
+                                                    .isNotEmpty
+                                                ? null
+                                                : ErrorsText.requiredErrorText,
+                                          )
+                                        : Text(''),
                                   ],
                                 ),
                               ),
@@ -370,6 +452,56 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             });
                                           },
                                         ),
+                                        playerMatchesStatistics
+                                                    .firstWhere((g) =>
+                                                        p.id == g.playerId)
+                                                    .isInjured ==
+                                                true
+                                            ? TextFormField(
+                                                decoration: InputDecoration(
+                                                  labelText:
+                                                      'Zawodnik ma kontuzję do:',
+                                                  prefixIcon:
+                                                      Icon(Icons.date_range),
+                                                ),
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                keyboardType:
+                                                    TextInputType.datetime,
+                                                controller:
+                                                    datetimeControllerList
+                                                            .firstWhere((g) =>
+                                                                p.id ==
+                                                                g['playerId'])[
+                                                        'textEditingController'],
+                                                onSaved: (value) {
+                                                  datetimeControllerList
+                                                      .firstWhere(
+                                                          (g) =>
+                                                              p.id ==
+                                                              g['playerId'])[
+                                                          'textEditingController']
+                                                      .text = value;
+                                                  playerMatchesStatistics
+                                                          .firstWhere(
+                                                              (g) =>
+                                                                  p.id ==
+                                                                  g.playerId)
+                                                          .injuryTo =
+                                                      DateTime.parse(value);
+                                                },
+                                                onTap: () => {
+                                                  showDateTimePicker(
+                                                      context, p.id)
+                                                },
+                                                key: ObjectKey(p.id),
+                                                validator: (value) =>
+                                                    value.isNotEmpty
+                                                        ? null
+                                                        : ErrorsText
+                                                            .requiredErrorText,
+                                              )
+                                            : Text(''),
                                       ],
                                     ),
                                   ),
@@ -454,6 +586,56 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             });
                                           },
                                         ),
+                                        playerMatchesStatistics
+                                                    .firstWhere((g) =>
+                                                        p.id == g.playerId)
+                                                    .isInjured ==
+                                                true
+                                            ? TextFormField(
+                                                decoration: InputDecoration(
+                                                  labelText:
+                                                      'Zawodnik ma kontuzję do:',
+                                                  prefixIcon:
+                                                      Icon(Icons.date_range),
+                                                ),
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                keyboardType:
+                                                    TextInputType.datetime,
+                                                controller:
+                                                    datetimeControllerList
+                                                            .firstWhere((g) =>
+                                                                p.id ==
+                                                                g['playerId'])[
+                                                        'textEditingController'],
+                                                onSaved: (value) {
+                                                  datetimeControllerList
+                                                      .firstWhere(
+                                                          (g) =>
+                                                              p.id ==
+                                                              g['playerId'])[
+                                                          'textEditingController']
+                                                      .text = value;
+                                                  playerMatchesStatistics
+                                                          .firstWhere(
+                                                              (g) =>
+                                                                  p.id ==
+                                                                  g.playerId)
+                                                          .injuryTo =
+                                                      DateTime.parse(value);
+                                                },
+                                                onTap: () => {
+                                                  showDateTimePicker(
+                                                      context, p.id)
+                                                },
+                                                key: ObjectKey(p.id),
+                                                validator: (value) =>
+                                                    value.isNotEmpty
+                                                        ? null
+                                                        : ErrorsText
+                                                            .requiredErrorText,
+                                              )
+                                            : Text(''),
                                       ],
                                     ),
                                   ),
@@ -538,6 +720,56 @@ class _RatePlayersScreenState extends State<RatePlayersScreen> {
                                             });
                                           },
                                         ),
+                                        playerMatchesStatistics
+                                                    .firstWhere((g) =>
+                                                        p.id == g.playerId)
+                                                    .isInjured ==
+                                                true
+                                            ? TextFormField(
+                                                decoration: InputDecoration(
+                                                  labelText:
+                                                      'Zawodnik ma kontuzję do:',
+                                                  prefixIcon:
+                                                      Icon(Icons.date_range),
+                                                ),
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                keyboardType:
+                                                    TextInputType.datetime,
+                                                controller:
+                                                    datetimeControllerList
+                                                            .firstWhere((g) =>
+                                                                p.id ==
+                                                                g['playerId'])[
+                                                        'textEditingController'],
+                                                onSaved: (value) {
+                                                  datetimeControllerList
+                                                      .firstWhere(
+                                                          (g) =>
+                                                              p.id ==
+                                                              g['playerId'])[
+                                                          'textEditingController']
+                                                      .text = value;
+                                                  playerMatchesStatistics
+                                                          .firstWhere(
+                                                              (g) =>
+                                                                  p.id ==
+                                                                  g.playerId)
+                                                          .injuryTo =
+                                                      DateTime.parse(value);
+                                                },
+                                                onTap: () => {
+                                                  showDateTimePicker(
+                                                      context, p.id)
+                                                },
+                                                key: ObjectKey(p.id),
+                                                validator: (value) =>
+                                                    value.isNotEmpty
+                                                        ? null
+                                                        : ErrorsText
+                                                            .requiredErrorText,
+                                              )
+                                            : Text(''),
                                       ],
                                     ),
                                   ),

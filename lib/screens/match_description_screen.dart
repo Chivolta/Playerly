@@ -120,14 +120,21 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Skład: ${getSelectedSquad(selectedMyMatch.squadId).name}',
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
+                        child: getSelectedSquad(selectedMyMatch.squadId) != null
+                            ? Text(
+                                'Skład: ${getSelectedSquad(selectedMyMatch.squadId).name}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              )
+                            : Text(
+                                'Skład został usunięty',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
                       ),
-                      selectedMyMatch.isEnd != true
+                      selectedMyMatch.isEnd != true &&
+                              getSelectedSquad(selectedMyMatch.squadId) != null
                           ? RaisedButton(
                               child: Text("Zakończ mecz"),
                               color: Colors.orange,
@@ -138,7 +145,9 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
                             )
                           : EndedMatchStatistics(selectedMyMatch),
                       selectedMyMatch.isEnd == true &&
-                              myMatchesProvider.getIfPlayersWereRated() == false
+                              myMatchesProvider.getIfPlayersWereRated() ==
+                                  false &&
+                              getSelectedSquad(selectedMyMatch.squadId) != null
                           ? RaisedButton(
                               child: const Text("Oceń zawodników"),
                               color: Colors.green,
@@ -147,7 +156,9 @@ class _MatchDescriptionScreenState extends State<MatchDescriptionScreen> {
                                     .pushNamed(RatePlayersScreen.routeName)
                               },
                             )
-                          : selectedMyMatch.isEnd == true
+                          : selectedMyMatch.isEnd == true &&
+                                  getSelectedSquad(selectedMyMatch.squadId) !=
+                                      null
                               ? Text('Zawodnicy zostali już ocenieni')
                               : Text(''),
                     ],

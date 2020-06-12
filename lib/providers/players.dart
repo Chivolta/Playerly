@@ -30,14 +30,23 @@ class Players with ChangeNotifier {
     return sum;
   }
 
+  Future<void> updatePlayerInjury(clubId, playerId, injuryTo) async {
+    print('Update player injury');
+
+    var playerRef = await databaseReference
+        .collection('clubs')
+        .document(clubId)
+        .collection('players')
+        .document(playerId)
+        .updateData({'injuryTo': injuryTo});
+
+    notifyListeners(); // notify all widgets about changes - so we used ChangeNotifie
+  }
+
   Future<void> addPlayer(Player player, clubId) async {
     print('Adding player');
 
-    DocumentReference ref = await databaseReference
-        .collection("clubs")
-        .document(clubId)
-        .collection('players')
-        .add({
+    DocumentReference ref = await databaseReference.collection('players').add({
       'name': player.name,
       'surname': player.surname,
       'age': player.age,
