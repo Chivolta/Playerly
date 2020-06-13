@@ -74,6 +74,93 @@ class MyMatches with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<MyMatch> getNextMatch(clubId) async {
+    print('Getting Next Match');
+    var timetablesQuery = await databaseReference
+        .collection("clubs")
+        .document(clubId)
+        .collection('timetables')
+        .getDocuments();
+
+    var timetables = timetablesQuery.documents;
+
+    List<MyMatch> matches = [];
+
+    for (var t in timetables) {
+      var matchesQuery = await databaseReference
+          .collection("clubs")
+          .document(clubId)
+          .collection('timetables')
+          .document(t.documentID)
+          .collection('matches')
+          .where('isEnd', isEqualTo: false)
+          // .orderBy('datetimeMatch', descending: true)
+          // .limit(1)
+          .getDocuments();
+
+      List<MyMatch> matchesTemp =
+          matchesQuery.documents.map((e) => MyMatch.fromFirestore(e)).toList();
+
+      matchesTemp.where((m) =>
+          (m.datetimeMatch).compareTo(DateTime.now()) > 0 ? true : false);
+      matchesTemp.sort((a, b) => (b.datetimeMatch).compareTo(a.datetimeMatch));
+
+      if (matchesTemp.length > 0) {
+        matches.add(matchesTemp[0]);
+      }
+    }
+
+    matches.sort((a, b) => (b.datetimeMatch).compareTo(a.datetimeMatch));
+    if (matches.length > 0) {
+      return matches[0];
+    } else {
+      return null;
+    }
+  }
+
+  Future<MyMatch> getLastMatch(clubId) async {
+    print('Getting Last Match');
+    var timetablesQuery = await databaseReference
+        .collection("clubs")
+        .document(clubId)
+        .collection('timetables')
+        .getDocuments();
+
+    var timetables = timetablesQuery.documents;
+
+    List<MyMatch> matches = [];
+
+    for (var t in timetables) {
+      var matchesQuery = await databaseReference
+          .collection("clubs")
+          .document(clubId)
+          .collection('timetables')
+          .document(t.documentID)
+          .collection('matches')
+          .where('isEnd', isEqualTo: true)
+          // .orderBy('datetimeMatch', descending: true)
+          // .limit(1)
+          .getDocuments();
+
+      List<MyMatch> matchesTemp =
+          matchesQuery.documents.map((e) => MyMatch.fromFirestore(e)).toList();
+
+      matchesTemp = matchesTemp.where((m) => m.isEnd == true).toList();
+      matchesTemp.sort((a, b) => (b.datetimeMatch).compareTo(a.datetimeMatch));
+
+      if (matchesTemp.length > 0) {
+        matches.add(matchesTemp[0]);
+      }
+    }
+
+    matches.sort((a, b) => (b.datetimeMatch).compareTo(a.datetimeMatch));
+    if (matches.length > 0) {
+      return matches[0];
+    } else {
+      return null;
+    }
+  }
+
   Future<void> getAllMatchesFromTimetable(clubId, timetableId) async {
     print('Getting all matches');
     await databaseReference
