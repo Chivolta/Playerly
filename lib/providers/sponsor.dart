@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class Sponsor {
+class Sponsor with ChangeNotifier {
   String name;
   double revenue;
   String id;
@@ -16,6 +16,6 @@ class Sponsor {
     Map data = doc.data;
 
     return Sponsor(
-        name: data['sponsor'], id: doc.documentID, revenue: doc['revenue']);
+        name: data['name'], id: doc.documentID, revenue: doc['revenue']);
   }
 }
