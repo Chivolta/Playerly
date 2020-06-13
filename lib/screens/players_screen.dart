@@ -44,6 +44,16 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
     String getAveragePlayerRating(playerId) {}
 
+    bool isInjured(playerId) {
+      var foundedPlayer = players.firstWhere((p) => p.id == playerId);
+      if (foundedPlayer.injuryTo != null) {
+        var isInjured = foundedPlayer.injuryTo.compareTo(DateTime.now());
+        print(isInjured);
+        return isInjured > 0 ? true : false;
+      }
+      return false;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Zawodnicy'),
@@ -72,11 +82,12 @@ class _PlayersScreenState extends State<PlayersScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
                                     '${(i + 1).toString()}. ${players[i].name} ${players[i].surname}, Pozycja: ${players[i].getPosition()}'),
                                 Text('Ocena z ostatnich meczy:'),
-                                Text('Kontuzja: '),
+                                Text('Kontuzja: ${isInjured(players[i].id)}'),
                               ],
                             )
                           ],

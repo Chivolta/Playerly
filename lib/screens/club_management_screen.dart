@@ -139,7 +139,7 @@ class _ClubManagementScreenState extends State<ClubManagementScreen> {
                                         )
                                       : Text(''),
                                 ]
-                              : Text(''),
+                              : <Widget>[],
                         ),
                       ),
                     ),
@@ -180,7 +180,7 @@ class _ClubManagementScreenState extends State<ClubManagementScreen> {
                                         'Data: ${_nextMatch.datetimeMatch}'),
                                   ),
                                 ]
-                              : Text(''),
+                              : <Widget>[],
                         ),
                       ),
                     ),
