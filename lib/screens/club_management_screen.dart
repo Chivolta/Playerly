@@ -98,43 +98,48 @@ class _ClubManagementScreenState extends State<ClubManagementScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
-                          children: <Widget>[
-                            Center(
-                              child: Text(
-                                'Poprzedni mecz:',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Text(
-                                '${selectedClub.name} vs ${_lastMatch.opponentName}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Text('Miejsce: ${_lastMatch.stadiumName}'),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Text('Data: ${_lastMatch.datetimeMatch}'),
-                            ),
-                            _lastMatch.isEnd == true
-                                ? Padding(
+                          children: _lastMatch != null
+                              ? <Widget>[
+                                  Center(
+                                    child: Text(
+                                      'Poprzedni mecz:',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
                                     padding: const EdgeInsets.all(2.0),
                                     child: Text(
-                                      getMatchResultText(_lastMatch),
+                                      '${selectedClub.name} vs ${_lastMatch.opponentName}',
                                       style: TextStyle(
-                                          fontSize: 15,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                  )
-                                : Text(''),
-                          ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Text(
+                                        'Miejsce: ${_lastMatch.stadiumName}'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Text(
+                                        'Data: ${_lastMatch.datetimeMatch}'),
+                                  ),
+                                  _lastMatch.isEnd == true
+                                      ? Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                            getMatchResultText(_lastMatch),
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      : Text(''),
+                                ]
+                              : Text(''),
                         ),
                       ),
                     ),
