@@ -70,10 +70,8 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text((i + 1).toString()),
-                            Text(employees[i].name),
-                            Text(employees[i].surname),
-                            Text(employees[i].position)
+                            Text(
+                                '${(i + 1).toString()}. ${employees[i].name} ${employees[i].surname}, Stanowisko: ${employees[i].position}'),
                           ],
                         ),
                       ),

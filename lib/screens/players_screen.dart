@@ -69,10 +69,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text((i + 1).toString()),
-                            Text(players[i].name),
-                            Text(players[i].surname),
-                            Text(players[i].getPosition())
+                            Text(
+                                '${(i + 1).toString()}. ${players[i].name} ${players[i].surname}, Pozycja: ${players[i].getPosition()}'),
                           ],
                         ),
                       ),
