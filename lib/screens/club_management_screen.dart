@@ -158,17 +158,17 @@ class _ClubManagementScreenState extends State<ClubManagementScreen> {
                             Padding(
                               padding: const EdgeInsets.all(2.0),
                               child: Text(
-                                '${selectedClub.name} vs ${_lastMatch.opponentName}',
+                                '${selectedClub.name} vs ${_nextMatch.opponentName}',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(2.0),
-                              child: Text('Miejsce: ${_lastMatch.stadiumName}'),
+                              child: Text('Miejsce: ${_nextMatch.stadiumName}'),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(2.0),
-                              child: Text('Data: ${_lastMatch.datetimeMatch}'),
+                              child: Text('Data: ${_nextMatch.datetimeMatch}'),
                             ),
                           ],
                         ),
