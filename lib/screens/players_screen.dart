@@ -42,6 +42,8 @@ class _PlayersScreenState extends State<PlayersScreen> {
     final playersData = Provider.of<Players>(context);
     List<Player> players = playersData.items;
 
+    String getAveragePlayerRating(playerId) {}
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Zawodnicy'),
@@ -69,8 +71,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text(
-                                '${(i + 1).toString()}. ${players[i].name} ${players[i].surname}, Pozycja: ${players[i].getPosition()}'),
+                            Column(
+                              children: <Widget>[
+                                Text(
+                                    '${(i + 1).toString()}. ${players[i].name} ${players[i].surname}, Pozycja: ${players[i].getPosition()}'),
+                                Text('Ocena z ostatnich meczy:'),
+                                Text('Kontuzja: '),
+                              ],
+                            )
                           ],
                         ),
                       ),
