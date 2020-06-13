@@ -35,9 +35,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
       final clubsProvider = Provider.of<MyClubs>(context);
       var clubId = clubsProvider.getActiveClub().id;
 
-      await playersProvider.getAllPlayerFromClub(clubId);
-      players = playersProvider.items;
-
       goalkeepers =
           players.where((p) => p.position == Position.Goalkeeper).toList();
 
@@ -49,18 +46,32 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
       strikers = players.where((p) => p.position == Position.Striker).toList();
 
-      _isInit = true;
-
       setState(() {
         _isLoading = false;
       });
-
+      _isInit = true;
       super.didChangeDependencies();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final playersProvider = Provider.of<Players>(context);
+
+    setState(() {
+      players = playersProvider.items;
+      goalkeepers =
+          players.where((p) => p.position == Position.Goalkeeper).toList();
+
+      defenders =
+          players.where((p) => p.position == Position.Defender).toList();
+
+      midfielders =
+          players.where((p) => p.position == Position.Midfielder).toList();
+
+      strikers = players.where((p) => p.position == Position.Striker).toList();
+    });
+
     bool isInjured(playerId) {
       var foundedPlayer = players.firstWhere((p) => p.id == playerId);
       if (foundedPlayer.injuryTo != null) {
@@ -90,11 +101,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
                   Card(
                     child: Column(
                       children: <Widget>[
-                        Center(
-                          child: Text(
-                            'Bramkarze:',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                              'Bramkarze:',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                         ...goalkeepers.map((p) => Row(
@@ -111,11 +125,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
                                 ),
                               ],
                             )),
-                        Center(
-                          child: Text(
-                            'Obrońcy:',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                              'Obrońcy:',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                         ...defenders.map((p) => Row(
@@ -132,11 +149,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
                                 ),
                               ],
                             )),
-                        Center(
-                          child: Text(
-                            'Pomocnicy:',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                              'Pomocnicy:',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                         ...midfielders.map((p) => Row(
@@ -153,11 +173,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
                                 ),
                               ],
                             )),
-                        Center(
-                          child: Text(
-                            'Napastnicy:',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                            child: Text(
+                              'Napastnicy:',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                         ...strikers.map((p) => Row(

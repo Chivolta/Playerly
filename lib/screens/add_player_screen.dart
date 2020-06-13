@@ -68,7 +68,12 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
       _form.currentState.save();
       newPlayer.id = Functions.generateId();
       _isLoading = true;
-      playersProvider.addPlayer(newPlayer, clubId).then((value) {
+      print(clubId);
+      playersProvider
+          .addPlayer(newPlayer, clubId)
+          .then((value) {})
+          .then((value) => playersProvider.getAllPlayerFromClub(clubId))
+          .then((value) {
         _isLoading = false;
         Navigator.of(context).pop();
       });

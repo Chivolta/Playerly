@@ -91,100 +91,107 @@ class _ClubManagementScreenState extends State<ClubManagementScreen> {
             ? Center(child: CircularProgressIndicator())
             : ListView(
                 children: <Widget>[
-                  Card(
-                    child: Card(
-                      color: getCardColor(_lastMatch),
-                      margin: const EdgeInsets.all(1),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: _lastMatch != null
-                              ? <Widget>[
-                                  Center(
-                                    child: Text(
-                                      'Poprzedni mecz:',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                      '${selectedClub.name} vs ${_lastMatch.opponentName}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                        'Miejsce: ${_lastMatch.stadiumName}'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                        'Data: ${_lastMatch.datetimeMatch}'),
-                                  ),
-                                  _lastMatch.isEnd == true
-                                      ? Padding(
+                  _lastMatch != null
+                      ? Card(
+                          child: Card(
+                            color: getCardColor(_lastMatch),
+                            margin: const EdgeInsets.all(1),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: _lastMatch != null
+                                    ? <Widget>[
+                                        Center(
+                                          child: Text(
+                                            'Poprzedni mecz:',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
                                           padding: const EdgeInsets.all(2.0),
                                           child: Text(
-                                            getMatchResultText(_lastMatch),
+                                            '${selectedClub.name} vs ${_lastMatch.opponentName}',
                                             style: TextStyle(
-                                                fontSize: 15,
                                                 fontWeight: FontWeight.bold),
                                           ),
-                                        )
-                                      : Text(''),
-                                ]
-                              : <Widget>[],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    child: Card(
-                      margin: const EdgeInsets.all(1),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: _nextMatch != null
-                              ? <Widget>[
-                                  Center(
-                                    child: Text(
-                                      'Następny mecz:',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                      '${selectedClub.name} vs ${_nextMatch.opponentName}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                        'Miejsce: ${_nextMatch.stadiumName}'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: Text(
-                                        'Data: ${_nextMatch.datetimeMatch}'),
-                                  ),
-                                ]
-                              : <Widget>[],
-                        ),
-                      ),
-                    ),
-                  ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                              'Miejsce: ${_lastMatch.stadiumName}'),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                              'Data: ${_lastMatch.datetimeMatch}'),
+                                        ),
+                                        _lastMatch.isEnd == true
+                                            ? Padding(
+                                                padding:
+                                                    const EdgeInsets.all(2.0),
+                                                child: Text(
+                                                  getMatchResultText(
+                                                      _lastMatch),
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              )
+                                            : Text(''),
+                                      ]
+                                    : <Widget>[],
+                              ),
+                            ),
+                          ),
+                        )
+                      : Text(''),
+                  _nextMatch != null
+                      ? Card(
+                          child: Card(
+                            margin: const EdgeInsets.all(1),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: _nextMatch != null
+                                    ? <Widget>[
+                                        Center(
+                                          child: Text(
+                                            'Następny mecz:',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                            '${selectedClub.name} vs ${_nextMatch.opponentName}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                              'Miejsce: ${_nextMatch.stadiumName}'),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                              'Data: ${_nextMatch.datetimeMatch}'),
+                                        ),
+                                      ]
+                                    : <Widget>[],
+                              ),
+                            ),
+                          ),
+                        )
+                      : Text(''),
                 ],
               ));
   }

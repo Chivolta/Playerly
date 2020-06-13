@@ -46,7 +46,11 @@ class Players with ChangeNotifier {
   Future<void> addPlayer(Player player, clubId) async {
     print('Adding player');
 
-    DocumentReference ref = await databaseReference.collection('players').add({
+    DocumentReference ref = await databaseReference
+        .collection('clubs')
+        .document(clubId)
+        .collection('players')
+        .add({
       'name': player.name,
       'surname': player.surname,
       'age': player.age,
